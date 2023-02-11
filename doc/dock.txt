@@ -1,0 +1,9 @@
+Pharmacy included:
+- Purchase Order
+- Purchase
+- Purchase Return
+- Sales
+- Sales Return
+- Damage Item Management
+- Inventory Management
+

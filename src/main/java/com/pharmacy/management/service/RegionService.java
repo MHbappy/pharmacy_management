@@ -1,0 +1,71 @@
+package com.pharmacy.management.service;
+
+import com.pharmacy.management.model.Region;
+import com.pharmacy.management.repository.RegionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@Transactional
+public class RegionService {
+
+    private final Logger log = LoggerFactory.getLogger(RegionService.class);
+
+    private final RegionRepository regionRepository;
+
+    public RegionService(RegionRepository regionRepository) {
+        this.regionRepository = regionRepository;
+    }
+
+    
+    public Region save(Region region) {
+        log.debug("Request to save Region : {}", region);
+        return regionRepository.save(region);
+    }
+
+    
+    public Optional<Region> partialUpdate(Region region) {
+        log.debug("Request to partially update Region : {}", region);
+
+        return regionRepository
+            .findById(region.getId())
+            .map(
+                existingRegion -> {
+                    if (region.getName() != null) {
+                        existingRegion.setName(region.getName());
+                    }
+                    if (region.getIsActive() != null) {
+                        existingRegion.setIsActive(region.getIsActive());
+                    }
+
+                    return existingRegion;
+                }
+            )
+            .map(regionRepository::save);
+    }
+
+    
+    @Transactional(readOnly = true)
+    public List<Region> findAll() {
+        log.debug("Request to get all Regions");
+        return regionRepository.findAll();
+    }
+
+    
+    @Transactional(readOnly = true)
+    public Optional<Region> findOne(Long id) {
+        log.debug("Request to get Region : {}", id);
+        return regionRepository.findById(id);
+    }
+
+    
+    public void delete(Long id) {
+        log.debug("Request to delete Region : {}", id);
+        regionRepository.deleteById(id);
+    }
+}
