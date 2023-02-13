@@ -1,16 +1,16 @@
 package com.pharmacy.management.repository;
 
-import com.pharmacy.management.model.*;
+import com.pharmacy.management.model.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
- * Spring Data SQL repository for the City entity.
+ * Spring Data SQL repository for the Company entity.
  */
 @SuppressWarnings("unused")
 @Repository
-public interface CityRepository extends JpaRepository<City, Long> {
-    List<City> findAllByIsActive(Boolean isActive);
+public interface CompanyRepository extends JpaRepository<Company, Long> {
+    List<Company> findAllByIsActive(Boolean isActive);
 }
