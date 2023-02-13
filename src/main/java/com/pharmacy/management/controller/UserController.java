@@ -2,8 +2,8 @@ package com.pharmacy.management.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.pharmacy.management.dto.UserDataDTO;
-import com.pharmacy.management.dto.UserResponseDTO;
+import com.pharmacy.management.dto.response.UserDataDTO;
+import com.pharmacy.management.dto.response.UserResponseDTO;
 import com.pharmacy.management.model.Users;
 import com.pharmacy.management.service.UserService;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.pharmacy.management.dto;
+package com.pharmacy.management.dto.response;
 
 import java.util.List;
 

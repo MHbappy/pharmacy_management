@@ -4,8 +4,11 @@ import com.pharmacy.management.model.Category;
 import com.pharmacy.management.repository.CategoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +27,7 @@ public class CategoryService {
     
     public Category save(Category category) {
         log.debug("Request to save Category : {}", category);
+        category.setIsActive(true);
         return categoryRepository.save(category);
     }
 
@@ -38,8 +42,8 @@ public class CategoryService {
                     if (category.getName() != null) {
                         existingCategory.setName(category.getName());
                     }
-                    if (category.getDecription() != null) {
-                        existingCategory.setDecription(category.getDecription());
+                    if (category.getDescription() != null) {
+                        existingCategory.setDescription(category.getDescription());
                     }
                     if (category.getPhoto() != null) {
                         existingCategory.setPhoto(category.getPhoto());
@@ -58,7 +62,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public List<Category> findAll() {
         log.debug("Request to get all Categories");
-        return categoryRepository.findAll();
+        return categoryRepository.findAllByIsActive(true);
     }
 
     
@@ -71,6 +75,14 @@ public class CategoryService {
     
     public void delete(Long id) {
         log.debug("Request to delete Category : {}", id);
-        categoryRepository.deleteById(id);
+        Optional<Category> categoryOptional = categoryRepository.findById(id);
+
+        categoryOptional.ifPresentOrElse(category -> {
+            category.setIsActive(false);
+            categoryRepository.save(category);
+        }, () -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no category!");
+        } );
+
     }
 }
