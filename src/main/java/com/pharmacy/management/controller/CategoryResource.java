@@ -63,8 +63,6 @@ public class CategoryResource {
                 .body(result);
     }
 
-
-
     @GetMapping("/categories")
     public List<Category> getAllCategories() {
         log.debug("REST request to get all Categories");

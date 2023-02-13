@@ -1,11 +1,15 @@
 package com.pharmacy.management.service;
 
 import com.pharmacy.management.model.City;
+import com.pharmacy.management.model.Region;
 import com.pharmacy.management.repository.CityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -47,23 +51,26 @@ public class CityService {
             .map(cityRepository::save);
     }
 
-    
     @Transactional(readOnly = true)
     public List<City> findAll() {
         log.debug("Request to get all Cities");
-        return cityRepository.findAll();
+        return cityRepository.findAllByIsActive(true);
     }
-
     
     @Transactional(readOnly = true)
     public Optional<City> findOne(Long id) {
         log.debug("Request to get City : {}", id);
         return cityRepository.findById(id);
     }
-
     
     public void delete(Long id) {
         log.debug("Request to delete City : {}", id);
-        cityRepository.deleteById(id);
+        Optional<City> cityOptional = cityRepository.findById(id);
+        cityOptional.ifPresentOrElse(city -> {
+            city.setIsActive(false);
+            cityRepository.save(city);
+        }, () -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no region!");
+        } );
     }
 }

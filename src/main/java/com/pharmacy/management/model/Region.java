@@ -1,5 +1,7 @@
 package com.pharmacy.management.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,5 +23,10 @@ public class Region implements Serializable {
     private String name;
 
     @Column(name = "is_active")
+    @JsonIgnore
     private Boolean isActive;
+
+    @ManyToOne
+    @JsonIgnore
+    private City city;
 }
