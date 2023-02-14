@@ -23,13 +23,11 @@ public class OrdersItemService {
         this.ordersItemRepository = ordersItemRepository;
     }
 
-    
     public OrdersItem save(OrdersItem ordersItem) {
         log.debug("Request to save OrdersItem : {}", ordersItem);
         return ordersItemRepository.save(ordersItem);
     }
 
-    
     public Optional<OrdersItem> partialUpdate(OrdersItem ordersItem) {
         log.debug("Request to partially update OrdersItem : {}", ordersItem);
 
@@ -50,14 +48,12 @@ public class OrdersItemService {
             .map(ordersItemRepository::save);
     }
 
-    
     @Transactional(readOnly = true)
     public List<OrdersItem> findAll() {
         log.debug("Request to get all OrdersItems");
         return ordersItemRepository.findAll();
     }
 
-    
     @Transactional(readOnly = true)
     public Optional<OrdersItem> findOne(Long id) {
         log.debug("Request to get OrdersItem : {}", id);

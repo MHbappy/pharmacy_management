@@ -4,9 +4,15 @@ import com.pharmacy.management.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Spring Data SQL repository for the Suppliers entity.
  */
 @SuppressWarnings("unused")
 @Repository
-public interface SuppliersRepository extends JpaRepository<Suppliers, Long> {}
+public interface SuppliersRepository extends JpaRepository<Suppliers, Long> {
+
+    List<Suppliers> findAllByIsActive(Boolean isActive);
+
+}

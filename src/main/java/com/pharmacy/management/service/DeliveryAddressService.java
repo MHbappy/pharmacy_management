@@ -22,12 +22,10 @@ public class DeliveryAddressService {
         this.deliveryAddressRepository = deliveryAddressRepository;
     }
 
-    
     public DeliveryAddress save(DeliveryAddress deliveryAddress) {
         log.debug("Request to save DeliveryAddress : {}", deliveryAddress);
         return deliveryAddressRepository.save(deliveryAddress);
     }
-
     
     public Optional<DeliveryAddress> partialUpdate(DeliveryAddress deliveryAddress) {
         log.debug("Request to partially update DeliveryAddress : {}", deliveryAddress);
@@ -55,21 +53,18 @@ public class DeliveryAddressService {
             .map(deliveryAddressRepository::save);
     }
 
-    
     @Transactional(readOnly = true)
     public List<DeliveryAddress> findAll() {
         log.debug("Request to get all DeliveryAddresses");
         return deliveryAddressRepository.findAll();
     }
 
-    
     @Transactional(readOnly = true)
     public Optional<DeliveryAddress> findOne(Long id) {
         log.debug("Request to get DeliveryAddress : {}", id);
         return deliveryAddressRepository.findById(id);
     }
 
-    
     public void delete(Long id) {
         log.debug("Request to delete DeliveryAddress : {}", id);
         deliveryAddressRepository.deleteById(id);

@@ -4,35 +4,30 @@ import com.pharmacy.management.model.Suppliers;
 import com.pharmacy.management.repository.SuppliersRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
-
 
 @Service
 @Transactional
 public class SuppliersService {
 
     private final Logger log = LoggerFactory.getLogger(SuppliersService.class);
-
     private final SuppliersRepository suppliersRepository;
-
     public SuppliersService(SuppliersRepository suppliersRepository) {
         this.suppliersRepository = suppliersRepository;
     }
-
     
     public Suppliers save(Suppliers suppliers) {
         log.debug("Request to save Suppliers : {}", suppliers);
         return suppliersRepository.save(suppliers);
     }
 
-    
     public Optional<Suppliers> partialUpdate(Suppliers suppliers) {
         log.debug("Request to partially update Suppliers : {}", suppliers);
-
         return suppliersRepository
             .findById(suppliers.getId())
             .map(
@@ -65,23 +60,26 @@ public class SuppliersService {
             .map(suppliersRepository::save);
     }
 
-    
     @Transactional(readOnly = true)
     public List<Suppliers> findAll() {
         log.debug("Request to get all Suppliers");
-        return suppliersRepository.findAll();
+        return suppliersRepository.findAllByIsActive(true);
     }
 
-    
     @Transactional(readOnly = true)
     public Optional<Suppliers> findOne(Long id) {
         log.debug("Request to get Suppliers : {}", id);
         return suppliersRepository.findById(id);
     }
 
-    
     public void delete(Long id) {
-        log.debug("Request to delete Suppliers : {}", id);
-        suppliersRepository.deleteById(id);
+        log.debug("Request to delete suppliers : {}", id);
+        Optional<Suppliers> suppliersOptional = suppliersRepository.findById(id);
+        suppliersOptional.ifPresentOrElse(category -> {
+            category.setIsActive(false);
+            suppliersRepository.save(category);
+        }, () -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no Suppliers!");
+        } );
     }
 }
