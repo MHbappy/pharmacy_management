@@ -1,11 +1,14 @@
 package com.pharmacy.management.service;
 
+import com.pharmacy.management.model.City;
 import com.pharmacy.management.model.Orders;
 import com.pharmacy.management.repository.OrdersRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +63,7 @@ public class OrdersService {
     @Transactional(readOnly = true)
     public List<Orders> findAll() {
         log.debug("Request to get all Orders");
-        return ordersRepository.findAll();
+        return ordersRepository.findAllByIsActive(true);
     }
 
     
@@ -73,6 +76,12 @@ public class OrdersService {
     
     public void delete(Long id) {
         log.debug("Request to delete Orders : {}", id);
-        ordersRepository.deleteById(id);
+        Optional<Orders> ordersOptional = ordersRepository.findById(id);
+        ordersOptional.ifPresentOrElse(orders -> {
+            orders.setIsActive(false);
+            ordersRepository.save(orders);
+        }, () -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no region!");
+        } );
     }
 }

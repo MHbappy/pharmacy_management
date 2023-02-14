@@ -37,4 +37,6 @@ public class Orders implements Serializable {
 
     @ManyToOne
     private Users users;
+
+    Boolean isActive;
 }

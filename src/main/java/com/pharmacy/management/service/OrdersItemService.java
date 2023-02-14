@@ -59,10 +59,4 @@ public class OrdersItemService {
         log.debug("Request to get OrdersItem : {}", id);
         return ordersItemRepository.findById(id);
     }
-
-    
-    public void delete(Long id) {
-        log.debug("Request to delete OrdersItem : {}", id);
-        ordersItemRepository.deleteById(id);
-    }
 }

@@ -46,4 +46,6 @@ public class DeliveryAddress implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "suppliers", "systemUsers", "deliveryAddresses" }, allowSetters = true)
     private Region region;
+
+    Boolean isActive;
 }

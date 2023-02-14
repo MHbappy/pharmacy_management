@@ -3,9 +3,6 @@ package com.pharmacy.management.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pharmacy.management.model.enumeration.InOutStatus;
 import lombok.Data;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -44,4 +41,6 @@ public class Stock implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "systemUsers", "products", "stocks", "ordersItems" }, allowSetters = true)
     private Pharmacy pharmacy;
+
+    Boolean isActive;
 }

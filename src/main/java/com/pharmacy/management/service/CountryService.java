@@ -4,8 +4,10 @@ import com.pharmacy.management.model.Country;
 import com.pharmacy.management.repository.CountryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,19 +55,24 @@ public class CountryService {
     @Transactional(readOnly = true)
     public List<Country> findAll() {
         log.debug("Request to get all Countries");
-        return countryRepository.findAll();
+        return countryRepository.findAllByIsActive(true);
     }
 
-    
     @Transactional(readOnly = true)
     public Optional<Country> findOne(Long id) {
         log.debug("Request to get Country : {}", id);
         return countryRepository.findById(id);
     }
 
-    
     public void delete(Long id) {
         log.debug("Request to delete Country : {}", id);
+        Optional<Country> countryOptional = countryRepository.findById(id);
+        countryOptional.ifPresentOrElse(country -> {
+            country.setIsActive(false);
+            countryRepository.save(country);
+        }, () -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no category!");
+        } );
         countryRepository.deleteById(id);
     }
 }

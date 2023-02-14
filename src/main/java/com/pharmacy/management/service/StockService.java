@@ -1,12 +1,13 @@
 package com.pharmacy.management.service;
 
-
 import com.pharmacy.management.model.Stock;
 import com.pharmacy.management.repository.StockRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +77,13 @@ public class StockService {
     
     public void delete(Long id) {
         log.debug("Request to delete Stock : {}", id);
-        stockRepository.deleteById(id);
+
+        Optional<Stock> stockOptional = stockRepository.findById(id);
+        stockOptional.ifPresentOrElse(stock -> {
+            stock.setIsActive(false);
+            stockRepository.save(stock);
+        }, () -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no region!");
+        } );
     }
 }

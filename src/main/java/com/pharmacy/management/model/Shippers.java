@@ -29,4 +29,6 @@ public class Shippers implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "product", "systemUsers", "ordersItems", "shippers" }, allowSetters = true)
     private Orders orders;
+
+    private Boolean isActive;
 }

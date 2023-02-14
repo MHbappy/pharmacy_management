@@ -4,8 +4,10 @@ import com.pharmacy.management.model.DeliveryAddress;
 import com.pharmacy.management.repository.DeliveryAddressRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +48,6 @@ public class DeliveryAddressService {
                     if (deliveryAddress.getPostalCode() != null) {
                         existingDeliveryAddress.setPostalCode(deliveryAddress.getPostalCode());
                     }
-
                     return existingDeliveryAddress;
                 }
             )
@@ -56,7 +57,7 @@ public class DeliveryAddressService {
     @Transactional(readOnly = true)
     public List<DeliveryAddress> findAll() {
         log.debug("Request to get all DeliveryAddresses");
-        return deliveryAddressRepository.findAll();
+        return deliveryAddressRepository.findAllByIsActive(true);
     }
 
     @Transactional(readOnly = true)
@@ -67,6 +68,12 @@ public class DeliveryAddressService {
 
     public void delete(Long id) {
         log.debug("Request to delete DeliveryAddress : {}", id);
-        deliveryAddressRepository.deleteById(id);
+        Optional<DeliveryAddress> deliveryAddressOptional = deliveryAddressRepository.findById(id);
+        deliveryAddressOptional.ifPresentOrElse(deliveryAddress -> {
+            deliveryAddress.setIsActive(false);
+            deliveryAddressRepository.save(deliveryAddress);
+        }, () -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no category!");
+        } );
     }
 }
