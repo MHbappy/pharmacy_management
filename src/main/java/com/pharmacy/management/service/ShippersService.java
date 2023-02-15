@@ -1,7 +1,5 @@
 package com.pharmacy.management.service;
 
-
-import com.pharmacy.management.model.Orders;
 import com.pharmacy.management.model.Shippers;
 import com.pharmacy.management.repository.ShippersRepository;
 import org.slf4j.Logger;

@@ -1,7 +1,6 @@
 package com.pharmacy.management.controller;
 
 import javax.servlet.http.HttpServletRequest;
-
 import com.pharmacy.management.dto.response.UserDataDTO;
 import com.pharmacy.management.dto.response.UserResponseDTO;
 import com.pharmacy.management.model.Users;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -49,6 +50,12 @@ public class UserController {
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   public UserResponseDTO search(@PathVariable String username) {
     return modelMapper.map(userService.search(username), UserResponseDTO.class);
+  }
+
+  @GetMapping(value = "/all-user")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  public List<Users> allUser() {
+    return userService.allUser();
   }
 
   @GetMapping(value = "/me")

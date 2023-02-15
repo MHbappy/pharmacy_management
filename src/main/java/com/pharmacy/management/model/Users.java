@@ -1,5 +1,7 @@
 package com.pharmacy.management.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +25,7 @@ public class Users {
   private String email;
 
   @Size(min = 8, message = "Minimum password length: 8 characters")
+  @JsonIgnore
   private String password;
 
   @Column(name = "first_name")
@@ -31,8 +34,20 @@ public class Users {
   @Column(name = "last_name")
   private String lastName;
 
+  @Column(name = "numId")
+  private String numId;
+
   @Column(name = "title")
   private String title;
+
+  @Column(name = "state")
+  private String state;
+
+  @Column(name = "code_city")
+  private String codeCity;
+
+  @Column(name = "code_location")
+  private String codeLocation;
 
   @Column(name = "title_of_courtesy")
   private String titleOfCourtesy;
@@ -46,11 +61,14 @@ public class Users {
   @Column(name = "address")
   private String address;
 
-  @Column(name = "postal_code")
-  private String postalCode;
+  @Column(name = "zip_code")
+  private String zip_code;
 
   @Column(name = "home_phone")
   private String homePhone;
+
+  @Column(name = "taxId")
+  private String taxId;
 
   @Column(name = "extention")
   private String extention;
@@ -61,6 +79,9 @@ public class Users {
   @Column(name = "notes")
   private String notes;
 
+  @ManyToOne
+  @JsonIgnoreProperties(value = { "country", "city", "region"}, allowSetters = true)
+  private Company company;
 
   @ManyToMany
   @JoinTable(
