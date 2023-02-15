@@ -83,7 +83,7 @@ public class Users {
   @JsonIgnoreProperties(value = { "country", "city", "region"}, allowSetters = true)
   private Company company;
 
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
           name = "user_role",
           joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},

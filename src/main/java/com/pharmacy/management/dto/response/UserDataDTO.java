@@ -31,8 +31,6 @@ public class UserDataDTO {
 
   private String address;
 
-  private String postalCode;
-
   private String homePhone;
 
   private String extention;
@@ -40,6 +38,14 @@ public class UserDataDTO {
   private String photoUrl;
 
   private String notes;
+
+  private String taxId;
+
+  private String state;
+
+  private String codeCity;
+
+  private String codeLocation;
 
   List<Roles> appUserRoles;
 
