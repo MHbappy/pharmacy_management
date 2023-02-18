@@ -39,7 +39,7 @@ public class UserDataDTO {
 
   private String notes;
 
-  private String taxId;
+  private String taxNum;
 
   private String state;
 

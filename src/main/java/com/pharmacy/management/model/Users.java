@@ -67,8 +67,8 @@ public class Users {
   @Column(name = "home_phone")
   private String homePhone;
 
-  @Column(name = "taxId")
-  private String taxId;
+  @Column(name = "taxNum")
+  private String taxNum;
 
   @Column(name = "extention")
   private String extention;
