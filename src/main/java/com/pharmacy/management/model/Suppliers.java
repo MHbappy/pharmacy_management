@@ -2,6 +2,8 @@ package com.pharmacy.management.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -11,8 +13,8 @@ import java.io.Serializable;
 @Entity
 @Table(name = "suppliers")
 @Data
+@NoArgsConstructor
 public class Suppliers implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -52,4 +54,8 @@ public class Suppliers implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = { "suppliers", "systemUsers", "deliveryAddresses" }, allowSetters = true)
     private Region region;
+
+    public Suppliers(Long id) {
+        this.id = id;
+    }
 }

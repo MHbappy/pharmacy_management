@@ -8,6 +8,8 @@ import com.pharmacy.management.model.Users;
 import com.pharmacy.management.repository.UserRepository;
 import com.pharmacy.management.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -64,7 +66,16 @@ public class UserService {
   public List<Users> allUser() {
     List<Users> appUser = userRepository.findAll();
     if (appUser == null) {
-      throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user doesn't exist");
+    }
+    return appUser;
+  }
+
+
+  public Page<Users> allUserByEmail(String email, Pageable pageable) {
+    Page<Users> appUser = userRepository.findAllByIsActiveAndEmailContaining(true, email, pageable);
+    if (appUser.isEmpty()) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user doesn't exist");
     }
     return appUser;
   }

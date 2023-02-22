@@ -9,6 +9,8 @@ import com.pharmacy.management.model.Users;
 import com.pharmacy.management.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,8 +58,8 @@ public class UserController {
 
   @GetMapping(value = "/all-user")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
-  public List<Users> allUser() {
-    return userService.allUser();
+  public Page<Users> allUser(@RequestParam(name = "email", defaultValue = "") String email, Pageable pageable) {
+    return userService.allUserByEmail(email, pageable);
   }
 
   @GetMapping(value = "/me")

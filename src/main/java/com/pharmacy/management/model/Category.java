@@ -2,6 +2,8 @@ package com.pharmacy.management.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -11,6 +13,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "category")
 @Data
+@NoArgsConstructor
 public class Category implements Serializable {
     //medical labs
 
@@ -33,6 +36,10 @@ public class Category implements Serializable {
     @Column(name = "is_active")
     @JsonIgnore
     private Boolean isActive;
+
+    public Category(Long id) {
+        this.id = id;
+    }
 }
 
 

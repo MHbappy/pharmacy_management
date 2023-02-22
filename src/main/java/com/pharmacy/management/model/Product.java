@@ -1,5 +1,6 @@
 package com.pharmacy.management.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pharmacy.management.model.enumeration.OrderType;
 import lombok.Data;
@@ -48,21 +49,22 @@ public class Product implements Serializable {
     private OrderType orderType;
 
     @Column(name = "is_active")
+    @JsonIgnore
     private Boolean isActive;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "products" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "isActive" }, allowSetters = true)
     private Category category;
 
     @ManyToOne
     @JsonIgnoreProperties(value = { "country", "city", "region", "products" }, allowSetters = true)
     private Suppliers suppliers;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "country", "city", "region"}, allowSetters = true)
-    private Company company;
+//    @ManyToOne
+//    @JsonIgnoreProperties(value = { "country", "city", "region"}, allowSetters = true)
+//    private Company company;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "systemUsers", "products", "stocks", "ordersItems" }, allowSetters = true)
-    private Pharmacy pharmacy;
+//    @ManyToOne
+//    @JsonIgnoreProperties(value = { "systemUsers", "products", "stocks", "ordersItems" }, allowSetters = true)
+//    private Pharmacy pharmacy;
 }

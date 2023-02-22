@@ -4,6 +4,8 @@ import com.pharmacy.management.model.Category;
 import com.pharmacy.management.repository.CategoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,9 +62,9 @@ public class CategoryService {
 
     
     @Transactional(readOnly = true)
-    public List<Category> findAll() {
+    public Page<Category> findAll(Pageable pageable) {
         log.debug("Request to get all Categories");
-        return categoryRepository.findAllByIsActive(true);
+        return categoryRepository.findAllByIsActive(true, pageable);
     }
 
     

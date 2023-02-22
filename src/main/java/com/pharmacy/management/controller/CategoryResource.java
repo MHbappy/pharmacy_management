@@ -6,6 +6,8 @@ import com.pharmacy.management.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +25,6 @@ import java.util.Optional;
 @Slf4j
 public class CategoryResource {
     private final CategoryService categoryService;
-    private final ModelMapper modelMapper;
     private final CategoryRepository categoryRepository;
 
     @PostMapping("/categories")
@@ -32,8 +33,8 @@ public class CategoryResource {
         if (category.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new category cannot already have an ID");
         }
+        category.setIsActive(true);
         Category result = categoryService.save(category);
-
         return ResponseEntity
                 .created(new URI("/api/categories/" + result.getId()))
                 .body(result);
@@ -64,9 +65,9 @@ public class CategoryResource {
     }
 
     @GetMapping("/categories")
-    public List<Category> getAllCategories() {
+    public Page<Category> getAllCategories(Pageable pageable) {
         log.debug("REST request to get all Categories");
-        return categoryService.findAll();
+        return categoryService.findAll(pageable);
     }
 
     @GetMapping("/categories/{id}")
