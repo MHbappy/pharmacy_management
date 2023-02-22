@@ -1,6 +1,8 @@
 package com.pharmacy.management.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import com.pharmacy.management.dto.response.UserDataDTO;
 import com.pharmacy.management.dto.response.UserResponseDTO;
 import com.pharmacy.management.model.Users;
@@ -35,7 +37,7 @@ public class UserController {
   }
 
   @PostMapping("/signup")
-  public String signup(@RequestBody UserDataDTO user) {
+  public String signup(@Valid @RequestBody UserDataDTO user) {
     return userService.signup(modelMapper.map(user, Users.class));
   }
 

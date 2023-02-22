@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -30,22 +31,21 @@ public class UserService {
   public String signin(String email, String password) {
     try {
       authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-
       Users appUser = userRepository.findByEmail(email);
-
       return jwtTokenProvider.createToken(email, appUser);
     } catch (AuthenticationException e) {
-      throw new CustomException("Invalid email/password supplied", HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email/password supplied");
     }
   }
 
   public String signup(Users appUser) {
     if (!userRepository.existsByEmail(appUser.getEmail())) {
+      appUser.setIsActive(true);
       appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
       userRepository.save(appUser);
       return jwtTokenProvider.createToken(appUser.getEmail(), appUser);
     } else {
-      throw new CustomException("Email is already in use", HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use");
     }
   }
 

@@ -79,6 +79,9 @@ public class Users {
   @Column(name = "notes")
   private String notes;
 
+  @Column(name = "is_active")
+  private Boolean isActive;
+
   @ManyToOne
   @JsonIgnoreProperties(value = { "country", "city", "region"}, allowSetters = true)
   private Company company;
