@@ -6,6 +6,7 @@ import com.pharmacy.management.repository.SuppliersRepository;
 import com.pharmacy.management.service.SuppliersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +72,7 @@ public class SuppliersResource {
     }
 
     @GetMapping("/suppliers")
-    public List<Suppliers> getAllSuppliers(@RequestParam(defaultValue = "companyName", required = false) String companyName, Pageable pageable) {
+    public Page<Suppliers> getAllSuppliers(@RequestParam(defaultValue = "companyName", required = false) String companyName, Pageable pageable) {
         return suppliersService.findAll(companyName, pageable);
     }
 

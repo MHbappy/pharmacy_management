@@ -4,6 +4,7 @@ import com.pharmacy.management.model.Suppliers;
 import com.pharmacy.management.repository.SuppliersRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -62,7 +63,7 @@ public class SuppliersService {
     }
 
     @Transactional(readOnly = true)
-    public List<Suppliers> findAll(String companyName, Pageable pageable) {
+    public Page<Suppliers> findAll(String companyName, Pageable pageable) {
         log.debug("Request to get all Suppliers");
         return suppliersRepository.findAllByIsActiveAndCompanyNameContaining(true, companyName, pageable);
     }
