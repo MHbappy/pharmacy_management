@@ -8,4 +8,15 @@
 ***pagination
 ***stock add
 ***Order
-***
+***User Edit
+
+****Company(done)
+****Country(Done)
+****City(Done)
+****Region()(Done)
+****
+
+
+///front end task
+Show region by city
+and everything with pagination

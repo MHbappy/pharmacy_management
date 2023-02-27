@@ -5,6 +5,8 @@ import com.pharmacy.management.model.Region;
 import com.pharmacy.management.repository.CityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ public class CityService {
     
     public City save(City city) {
         log.debug("Request to save City : {}", city);
+        city.setIsActive(true);
         return cityRepository.save(city);
     }
 
@@ -52,9 +55,9 @@ public class CityService {
     }
 
     @Transactional(readOnly = true)
-    public List<City> findAll() {
+    public Page<City> findAll(String name, Pageable pageable) {
         log.debug("Request to get all Cities");
-        return cityRepository.findAllByIsActive(true);
+        return cityRepository.findAllByIsActiveAndNameContaining(true, name, pageable);
     }
     
     @Transactional(readOnly = true)

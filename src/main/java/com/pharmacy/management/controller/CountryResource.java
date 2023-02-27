@@ -5,6 +5,8 @@ import com.pharmacy.management.repository.CountryRepository;
 import com.pharmacy.management.service.CountryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,9 +66,9 @@ public class CountryResource {
     }
 
     @GetMapping("/countries")
-    public List<Country> getAllCountries() {
+    public Page<Country> getAllCountries(@RequestParam(required = false, defaultValue = "") String name, Pageable pageable) {
         log.debug("REST request to get all Countries");
-        return countryService.findAll();
+        return countryService.findAll(name, pageable);
     }
 
     @GetMapping("/countries/{id}")

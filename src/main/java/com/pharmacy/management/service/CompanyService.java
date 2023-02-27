@@ -4,6 +4,8 @@ import com.pharmacy.management.model.Company;
 import com.pharmacy.management.repository.CompanyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,9 +74,9 @@ public class CompanyService {
 
     
     @Transactional(readOnly = true)
-    public List<Company> findAll() {
+    public Page<Company> findAll(String name, Pageable pageable) {
         log.debug("Request to get all Companies");
-        return companyRepository.findAllByIsActive(true);
+        return companyRepository.findAllByIsActiveAndNameContaining(true, name, pageable);
     }
 
     

@@ -27,6 +27,5 @@ public class Region implements Serializable {
     private Boolean isActive;
 
     @ManyToOne
-    @JsonIgnore
     private City city;
 }

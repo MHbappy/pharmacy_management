@@ -4,6 +4,8 @@ import com.pharmacy.management.model.Country;
 import com.pharmacy.management.repository.CountryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ public class CountryService {
     
     public Country save(Country country) {
         log.debug("Request to save Country : {}", country);
+        country.setIsActive(true);
         return countryRepository.save(country);
     }
 
@@ -45,6 +48,7 @@ public class CountryService {
                         existingCountry.setIsActive(country.getIsActive());
                     }
 
+                    existingCountry.setIsActive(true);
                     return existingCountry;
                 }
             )
@@ -53,9 +57,9 @@ public class CountryService {
 
     
     @Transactional(readOnly = true)
-    public List<Country> findAll() {
+    public Page<Country> findAll(String name, Pageable pageable) {
         log.debug("Request to get all Countries");
-        return countryRepository.findAllByIsActive(true);
+        return countryRepository.findAllByIsActiveAndNameContaining(true, name, pageable);
     }
 
     @Transactional(readOnly = true)

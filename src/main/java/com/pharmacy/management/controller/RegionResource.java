@@ -5,6 +5,8 @@ import com.pharmacy.management.repository.RegionRepository;
 import com.pharmacy.management.service.RegionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,9 +68,9 @@ public class RegionResource {
     }
 
     @GetMapping("/regions")
-    public List<Region> getAllRegions() {
+    public Page<Region> getAllRegions(@RequestParam(defaultValue = "", required = false) String name, Pageable pageable) {
         log.debug("REST request to get all Regions");
-        return regionService.findAll();
+        return regionService.findAll(name, pageable);
     }
 
     @GetMapping("/regions-by-city-id/{cityId}")
