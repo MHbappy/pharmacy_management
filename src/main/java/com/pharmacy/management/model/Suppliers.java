@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -23,6 +24,7 @@ public class Suppliers implements Serializable {
     private Long id;
 
     @Column(name = "company_name")
+    @Size(min = 2, message = "Minimum name length: 2 characters")
     private String companyName;
 
     @Column(name = "contact_title")

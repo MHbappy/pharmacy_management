@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -33,7 +35,7 @@ public class CountryResource {
     }
 
     @PostMapping("/countries")
-    public ResponseEntity<Country> createCountry(@RequestBody Country country) throws URISyntaxException {
+    public ResponseEntity<Country> createCountry(@RequestBody @Valid Country country) throws URISyntaxException {
         log.debug("REST request to save Country : {}", country);
         if (country.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new country cannot already have an ID");

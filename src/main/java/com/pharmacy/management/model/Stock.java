@@ -38,9 +38,9 @@ public class Stock implements Serializable {
     @JsonIgnoreProperties(value = { "category", "suppliers", "pharmacy", "stocks", "orders" }, allowSetters = true)
     private Product product;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "systemUsers", "products", "stocks", "ordersItems" }, allowSetters = true)
-    private Pharmacy pharmacy;
+//    @ManyToOne
+//    @JsonIgnoreProperties(value = { "systemUsers", "products", "stocks", "ordersItems" }, allowSetters = true)
+//    private Pharmacy pharmacy;
 
     Boolean isActive;
 }

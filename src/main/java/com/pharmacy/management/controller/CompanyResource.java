@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -34,7 +35,7 @@ public class CompanyResource {
     }
 
     @PostMapping("/companies")
-    public ResponseEntity<Company> createCompany(@RequestBody Company company) throws URISyntaxException {
+    public ResponseEntity<Company> createCompany(@RequestBody @Valid Company company) throws URISyntaxException {
         log.debug("REST request to save Company : {}", company);
         if (company.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new company cannot already have an ID");

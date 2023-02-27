@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -34,7 +35,7 @@ public class RegionResource {
     }
 
     @PostMapping("/regions")
-    public ResponseEntity<Region> createRegion(@RequestBody Region region) throws URISyntaxException {
+    public ResponseEntity<Region> createRegion(@RequestBody @Valid Region region) throws URISyntaxException {
         log.debug("REST request to save Region : {}", region);
         if (region.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new region cannot already have an ID");

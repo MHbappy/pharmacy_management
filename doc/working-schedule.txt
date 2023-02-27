@@ -19,5 +19,9 @@
 
 
 ///front end task
+Search all things
+Add Edit Suppliers
+Add Suppliers with Product
 Show region by city
 and everything with pagination
+Add supplier to product

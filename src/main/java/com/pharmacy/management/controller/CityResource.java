@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -35,7 +36,7 @@ public class CityResource {
     }
 
     @PostMapping("/cities")
-    public ResponseEntity<City> createCity(@RequestBody City city) throws URISyntaxException {
+    public ResponseEntity<City> createCity(@RequestBody @Valid City city) throws URISyntaxException {
         log.debug("REST request to save City : {}", city);
         if (city.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new city cannot already have an ID");

@@ -41,7 +41,7 @@ public class ProductService {
             product.setSuppliers(new Suppliers(productRequestDTO.getSupplierId()));
         }
         //when new product create only
-        if (productRequestDTO == null || productRequestDTO.getProductId().equals(0)){
+        if (productRequestDTO.getId() == null || productRequestDTO.getId().equals(0)){
             product.setReorderLevel(0);
             product.setUnitsOnOrder(0);
         }

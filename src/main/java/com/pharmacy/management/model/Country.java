@@ -6,6 +6,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class Country implements Serializable {
     private Long id;
 
     @Column(name = "name")
+    @Size(min = 2, message = "Minimum name length: 2 characters")
     private String name;
 
     @Column(name = "is_active")

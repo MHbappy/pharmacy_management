@@ -6,10 +6,13 @@ import com.pharmacy.management.repository.SuppliersRepository;
 import com.pharmacy.management.service.SuppliersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -32,11 +35,12 @@ public class SuppliersResource {
     }
 
     @PostMapping("/suppliers")
-    public ResponseEntity<Suppliers> createSuppliers(@RequestBody Suppliers suppliers) throws URISyntaxException {
+    public ResponseEntity<Suppliers> createSuppliers(@RequestBody @Valid Suppliers suppliers) throws URISyntaxException {
         log.debug("REST request to save Suppliers : {}", suppliers);
         if (suppliers.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new suppliers cannot already have an ID");
         }
+        suppliers.setIsActive(true);
         Suppliers result = suppliersService.save(suppliers);
         return ResponseEntity
             .created(new URI("/api/suppliers/" + result.getId()))
@@ -67,8 +71,8 @@ public class SuppliersResource {
     }
 
     @GetMapping("/suppliers")
-    public List<Suppliers> getAllSuppliers() {
-        return suppliersService.findAll();
+    public List<Suppliers> getAllSuppliers(@RequestParam(defaultValue = "companyName", required = false) String companyName, Pageable pageable) {
+        return suppliersService.findAll(companyName, pageable);
     }
 
     @GetMapping("/suppliers/{id}")

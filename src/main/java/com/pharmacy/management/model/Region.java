@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -20,6 +21,7 @@ public class Region implements Serializable {
     private Long id;
 
     @Column(name = "name")
+    @Size(min = 2, message = "Minimum name length: 2 characters")
     private String name;
 
     @Column(name = "is_active")
