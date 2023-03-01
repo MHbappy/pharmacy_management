@@ -68,6 +68,14 @@ public class ProductResource {
         return productService.findAllByName(name, pageable);
     }
 
+
+
+    @GetMapping("/all-products")
+    public List<Product> getAllProducts(@RequestParam(name = "name", defaultValue = "") String name) {
+        log.debug("REST request to get all Products");
+        return productService.findAllByName(name);
+    }
+
     @GetMapping("/products/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable Long id) {
         log.debug("REST request to get Product : {}", id);

@@ -59,6 +59,12 @@ public class CityService {
         log.debug("Request to get all Cities");
         return cityRepository.findAllByIsActiveAndNameContaining(true, name, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public List<City> findAll(String name) {
+        log.debug("Request to get all Cities");
+        return cityRepository.findAllByIsActiveAndNameContaining(true, name);
+    }
     
     @Transactional(readOnly = true)
     public Optional<City> findOne(Long id) {

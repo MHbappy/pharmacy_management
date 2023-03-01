@@ -15,7 +15,6 @@ import java.util.List;
 @Repository
 public interface RegionRepository extends JpaRepository<Region, Long> {
     List<Region> findAllByCity_IdAndCity_IsActiveAndIsActive(Long cityId, Boolean cityIsActive, Boolean regionIsActive);
-
     Page<Region> findAllByIsActiveAndNameContaining(Boolean isActive, String name, Pageable pageable);
-
+    List<Region> findAllByIsActiveAndNameContaining(Boolean isActive, String name);
 }

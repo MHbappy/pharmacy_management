@@ -74,6 +74,13 @@ public class RegionResource {
         return regionService.findAll(name, pageable);
     }
 
+
+    @GetMapping("/all-regions")
+    public List<Region> getAllRegions(@RequestParam(defaultValue = "", required = false) String name) {
+        log.debug("REST request to get all Regions");
+        return regionService.findAll(name);
+    }
+
     @GetMapping("/regions-by-city-id/{cityId}")
     public List<Region> getAllRegionsByCityId(@RequestParam("cityId") Long cityId) {
         log.debug("REST request to get all Regions");

@@ -79,6 +79,13 @@ public class CompanyService {
         return companyRepository.findAllByIsActiveAndNameContaining(true, name, pageable);
     }
 
+
+    @Transactional(readOnly = true)
+    public List<Company> findAll(String name) {
+        log.debug("Request to get all Companies");
+        return companyRepository.findAllByIsActiveAndNameContaining(true, name);
+    }
+
     
     @Transactional(readOnly = true)
     public Optional<Company> findOne(Long id) {

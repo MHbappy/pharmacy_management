@@ -68,6 +68,14 @@ public class SuppliersService {
         return suppliersRepository.findAllByIsActiveAndCompanyNameContaining(true, companyName, pageable);
     }
 
+
+
+    @Transactional(readOnly = true)
+    public List<Suppliers> findAll(String companyName) {
+        log.debug("Request to get all Suppliers");
+        return suppliersRepository.findAllByIsActiveAndCompanyNameContaining(true, companyName);
+    }
+
     @Transactional(readOnly = true)
     public Optional<Suppliers> findOne(Long id) {
         log.debug("Request to get Suppliers : {}", id);

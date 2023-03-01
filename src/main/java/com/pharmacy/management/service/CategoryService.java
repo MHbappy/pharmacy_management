@@ -67,6 +67,13 @@ public class CategoryService {
         return categoryRepository.findAllByIsActive(true, pageable);
     }
 
+
+    @Transactional(readOnly = true)
+    public List<Category> findAll() {
+        log.debug("Request to get all Categories");
+        return categoryRepository.findAllByIsActive(true);
+    }
+
     
     @Transactional(readOnly = true)
     public Optional<Category> findOne(Long id) {

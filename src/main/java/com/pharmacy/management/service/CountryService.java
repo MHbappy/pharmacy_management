@@ -62,6 +62,13 @@ public class CountryService {
         return countryRepository.findAllByIsActiveAndNameContaining(true, name, pageable);
     }
 
+
+    @Transactional(readOnly = true)
+    public List<Country> findAll(String name) {
+        log.debug("Request to get all Countries");
+        return countryRepository.findAllByIsActiveAndNameContaining(true, name);
+    }
+
     @Transactional(readOnly = true)
     public Optional<Country> findOne(Long id) {
         log.debug("Request to get Country : {}", id);

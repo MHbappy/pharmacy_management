@@ -75,6 +75,13 @@ public class CityResource {
         return cityService.findAll(name, pageable);
     }
 
+
+    @GetMapping("/all-cities")
+    public List<City> getAllCities(@RequestParam(defaultValue = "", required = false) String name) {
+        log.debug("REST request to get all Cities");
+        return cityService.findAll(name);
+    }
+
     @GetMapping("/cities/{id}")
     public ResponseEntity<City> getCity(@PathVariable Long id) {
         log.debug("REST request to get City : {}", id);

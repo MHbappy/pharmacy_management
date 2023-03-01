@@ -73,6 +73,14 @@ public class CompanyResource {
         return companyService.findAll(name, pageable);
     }
 
+
+
+    @GetMapping("/all-companies")
+    public List<Company> getAllCompanies(@RequestParam(required = false, defaultValue = "") String name) {
+        log.debug("REST request to get all Companies");
+        return companyService.findAll(name);
+    }
+
     @GetMapping("/companies/{id}")
     public ResponseEntity<Company> getCompany(@PathVariable Long id) {
         log.debug("REST request to get Company : {}", id);

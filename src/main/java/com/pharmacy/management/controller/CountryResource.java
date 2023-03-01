@@ -73,6 +73,13 @@ public class CountryResource {
         return countryService.findAll(name, pageable);
     }
 
+
+    @GetMapping("/all-countries")
+    public List<Country> getAllCountries(@RequestParam(required = false, defaultValue = "") String name) {
+        log.debug("REST request to get all Countries");
+        return countryService.findAll(name);
+    }
+
     @GetMapping("/countries/{id}")
     public ResponseEntity<Country> getCountry(@PathVariable Long id) {
         log.debug("REST request to get Country : {}", id);

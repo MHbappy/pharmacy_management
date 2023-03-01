@@ -83,6 +83,14 @@ public class ProductService {
         return productRepository.findAllByIsActiveAndNameContaining(true, name, pageable);
     }
 
+
+
+    @Transactional(readOnly = true)
+    public List<Product> findAllByName(@RequestParam(name = "name", defaultValue = "") String name) {
+        log.debug("Request to get all Products");
+        return productRepository.findAllByIsActiveAndNameContaining(true, name);
+    }
+
     @Transactional(readOnly = true)
     public Optional<Product> findOne(Long id) {
         log.debug("Request to get Product : {}", id);

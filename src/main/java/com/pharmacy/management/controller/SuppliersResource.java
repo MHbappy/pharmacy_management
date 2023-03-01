@@ -76,6 +76,12 @@ public class SuppliersResource {
         return suppliersService.findAll(companyName, pageable);
     }
 
+
+    @GetMapping("/all-suppliers")
+    public List<Suppliers> getAllSuppliers(@RequestParam(defaultValue = "companyName", required = false) String companyName) {
+        return suppliersService.findAll(companyName);
+    }
+
     @GetMapping("/suppliers/{id}")
     public ResponseEntity<Suppliers> getSuppliers(@PathVariable Long id) {
         log.debug("REST request to get Suppliers : {}", id);

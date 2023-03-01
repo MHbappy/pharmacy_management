@@ -15,4 +15,5 @@ import java.util.List;
 @Repository
 public interface CityRepository extends JpaRepository<City, Long> {
     Page<City> findAllByIsActiveAndNameContaining(Boolean isActive, String name, Pageable pageable);
+    List<City> findAllByIsActiveAndNameContaining(Boolean isActive, String name);
 }

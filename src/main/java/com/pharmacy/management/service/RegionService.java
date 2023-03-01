@@ -64,6 +64,13 @@ public class RegionService {
 
 
     @Transactional(readOnly = true)
+    public List<Region> findAll(String name) {
+        log.debug("Request to get all Regions");
+        return regionRepository.findAllByIsActiveAndNameContaining(true, name);
+    }
+
+
+    @Transactional(readOnly = true)
     public List<Region> findAllByCityId(Long cityId) {
         log.debug("Request to get all Regions");
         return regionRepository.findAllByCity_IdAndCity_IsActiveAndIsActive(cityId, true, true);

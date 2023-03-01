@@ -70,6 +70,13 @@ public class CategoryResource {
         return categoryService.findAll(pageable);
     }
 
+
+    @GetMapping("/all-categories")
+    public List<Category> getAllCategories() {
+        log.debug("REST request to get all Categories");
+        return categoryService.findAll();
+    }
+
     @GetMapping("/categories/{id}")
     public ResponseEntity<Category> getCategory(@PathVariable Long id) {
         log.debug("REST request to get Category : {}", id);
