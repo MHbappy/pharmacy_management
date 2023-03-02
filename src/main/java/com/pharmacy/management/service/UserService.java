@@ -3,11 +3,14 @@ package com.pharmacy.management.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.pharmacy.management.dto.request.PasswordChangeDTO;
+import com.pharmacy.management.dto.request.UserUpdateDataDTO;
 import com.pharmacy.management.exception.CustomException;
 import com.pharmacy.management.model.Users;
 import com.pharmacy.management.repository.UserRepository;
 import com.pharmacy.management.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,67 +29,84 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-  private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder;
-  private final JwtTokenProvider jwtTokenProvider;
-  private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
 
-  public String signin(String email, String password) {
-    try {
-      authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-      Users appUser = userRepository.findByEmail(email);
-      return jwtTokenProvider.createToken(email, appUser);
-    } catch (AuthenticationException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email/password supplied");
+    private final ModelMapper modelMapper;
+
+    public String signin(String email, String password) {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            Users appUser = userRepository.findByEmail(email);
+            return jwtTokenProvider.createToken(email, appUser);
+        } catch (AuthenticationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email/password supplied");
+        }
     }
-  }
 
-  public String signup(Users appUser) {
-    if (!userRepository.existsByEmail(appUser.getEmail())) {
-      appUser.setIsActive(true);
-      appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-      userRepository.save(appUser);
-      return jwtTokenProvider.createToken(appUser.getEmail(), appUser);
-    } else {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use");
+    public String signup(Users appUser) {
+        if (!userRepository.existsByEmail(appUser.getEmail())) {
+            appUser.setIsActive(true);
+            appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+            userRepository.save(appUser);
+            return jwtTokenProvider.createToken(appUser.getEmail(), appUser);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is already in use");
+        }
     }
-  }
 
-  public void delete(String email) {
-    userRepository.deleteByEmail(email);
-  }
 
-  public Users search(String email) {
-    Users appUser = userRepository.findByEmail(email);
-    if (appUser == null) {
-      throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
+    public Boolean passwordChange(PasswordChangeDTO appUser) {
+        Users users = userRepository.findById(appUser.getId()).get();
+        users.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        userRepository.save(users);
+        return true;
     }
-    return appUser;
-  }
 
-  public List<Users> allUser() {
-    List<Users> appUser = userRepository.findAll();
-    if (appUser == null) {
-      return new ArrayList<>();
+    public Boolean updateUser(UserUpdateDataDTO userUpdateDataDTO) {
+        Users users = userRepository.findById(userUpdateDataDTO.getId()).get();
+        modelMapper.map(userUpdateDataDTO, users);
+        userRepository.save(users);
+        return true;
     }
-    return appUser;
-  }
 
-
-  public Page<Users> allUserByEmail(String email, Pageable pageable) {
-    Page<Users> appUser = userRepository.findAllByIsActiveAndEmailContaining(true, email, pageable);
-    if (appUser.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user doesn't exist");
+    public void delete(String email) {
+        userRepository.deleteByEmail(email);
     }
-    return appUser;
-  }
 
-  public Users whoami(HttpServletRequest req) {
-    return userRepository.findByEmail(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
-  }
+    public Users search(String email) {
+        Users appUser = userRepository.findByEmail(email);
+        if (appUser == null) {
+            throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
+        }
+        return appUser;
+    }
 
-  public String refresh(String email) {
-    return jwtTokenProvider.createToken(email, userRepository.findByEmail(email));
-  }
+    public List<Users> allUser() {
+        List<Users> appUser = userRepository.findAll();
+        if (appUser == null) {
+            return new ArrayList<>();
+        }
+        return appUser;
+    }
+
+
+    public Page<Users> allUserByEmail(String email, Pageable pageable) {
+        Page<Users> appUser = userRepository.findAllByIsActiveAndEmailContaining(true, email, pageable);
+        if (appUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user doesn't exist");
+        }
+        return appUser;
+    }
+
+    public Users whoami(HttpServletRequest req) {
+        return userRepository.findByEmail(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
+    }
+
+    public String refresh(String email) {
+        return jwtTokenProvider.createToken(email, userRepository.findByEmail(email));
+    }
 
 }

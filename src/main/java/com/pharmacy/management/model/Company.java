@@ -26,6 +26,8 @@ public class Company implements Serializable {
     @Size(min = 2, message = "Minimum name length: 2 characters")
     private String name;
 
+    private String taxId;
+
     @Column(name = "address_1")
     private String address1;
 

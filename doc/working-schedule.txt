@@ -31,5 +31,20 @@ Add Company TaxId
 Add user with company
 User Edit option
 add list without pagination with city, region, county, category, suppliers, company
+
+
+
 In category add three fields and everything is boolean like status, limit  per quantity, limit per cost
 IN product, add costPerService, serviceLImitPerQuantitiy, OrderLimitPerCost, Add file, Add price
+
+
+-----------------------
+add taxId on company
+Add User company
+Update User(Here I have deleted email, password, and role editing option)
+change password
+added status, isLimitUnit, isLimitCost on category(Need test)
+added in product unitPrice, limitCost, limitUnit, file(Need test)
+
+
+

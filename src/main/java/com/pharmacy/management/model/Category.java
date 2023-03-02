@@ -33,6 +33,15 @@ public class Category implements Serializable {
     @Column(name = "photo")
     private String photo;
 
+    @Column(name = "status")
+    Boolean status;
+
+    @Column(name = "is_limit_unit")
+    Boolean isLimitUnit;
+
+    @Column(name = "is_limit_cost")
+    Boolean isLimitCost;
+
     @Column(name = "is_active")
     @JsonIgnore
     private Boolean isActive;

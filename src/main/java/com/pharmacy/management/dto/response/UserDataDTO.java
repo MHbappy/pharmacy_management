@@ -59,9 +59,7 @@ public class UserDataDTO {
 
   private String codeLocation;
 
-  @ManyToOne
-  @JsonIgnore
-  Company company;
+  private Company company;
 
   List<Roles> appUserRoles;
 

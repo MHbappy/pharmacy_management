@@ -28,8 +28,11 @@ public class ProductRequestDTO {
     private Long supplierId;
     @Enumerated(EnumType.STRING)
     private OrderType orderType;
-
-
+    @NotNull
+    private Integer unitPrice;
+    private Integer limitCost;
+    private Integer limitUnit;
+    private byte[] file;
 
 //    private Integer unitsOnOrder;
 //    private Integer reorderLevel;

@@ -41,12 +41,23 @@ public class Product implements Serializable {
     @Column(name = "units_on_order")
     private Integer unitsOnOrder;
 
-    @Column(name = "reorder_level")
-    private Integer reorderLevel;
-
     @Column(name = "order_type")
     @Enumerated(EnumType.STRING)
     private OrderType orderType;
+
+    @Column(name = "reorder_level")
+    private Integer reorderLevel;
+    @Column(name = "unit_price")
+    private Integer unitPrice;
+
+    @Column(name = "limit_cost")
+    private Integer limitCost;
+
+    @Column(name = "limit_unit")
+    private Integer limitUnit;
+
+    @Column(name = "file")
+    private byte[] file;
 
     @Column(name = "is_active")
     @JsonIgnore
