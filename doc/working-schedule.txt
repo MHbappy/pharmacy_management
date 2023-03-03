@@ -45,7 +45,7 @@ Update User(Here I have deleted email, password, and role editing option)
 change password
 added status, isLimitUnit, isLimitCost on category
 added in product unitPrice, limitCost, limitUnit, file
-added stock
+added stock(IN/OUT)
 
 
 
