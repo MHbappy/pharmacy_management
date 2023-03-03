@@ -72,13 +72,13 @@ public class SuppliersResource {
     }
 
     @GetMapping("/suppliers")
-    public Page<Suppliers> getAllSuppliers(@RequestParam(defaultValue = "companyName", required = false) String companyName, Pageable pageable) {
+    public Page<Suppliers> getAllSuppliers(@RequestParam(defaultValue = "", required = false) String companyName, Pageable pageable) {
         return suppliersService.findAll(companyName, pageable);
     }
 
 
     @GetMapping("/all-suppliers")
-    public List<Suppliers> getAllSuppliers(@RequestParam(defaultValue = "companyName", required = false) String companyName) {
+    public List<Suppliers> getAllSuppliers(@RequestParam(defaultValue = "", required = false) String companyName) {
         return suppliersService.findAll(companyName);
     }
 

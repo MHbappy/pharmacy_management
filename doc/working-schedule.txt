@@ -37,7 +37,7 @@ add list without pagination with city, region, county, category, suppliers, comp
 In category add three fields and everything is boolean like status, limit  per quantity, limit per cost
 IN product, add costPerService, serviceLImitPerQuantitiy, OrderLimitPerCost, Add file, Add price
 
-
+-----------------------
 -----------------------
 add taxId on company
 Add User company
