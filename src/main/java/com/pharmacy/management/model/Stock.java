@@ -1,5 +1,6 @@
 package com.pharmacy.management.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pharmacy.management.model.enumeration.InOutStatus;
 import lombok.Data;
@@ -21,11 +22,8 @@ public class Stock implements Serializable {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "unit")
-    private Integer unit;
-
-    @Column(name = "price")
-    private Integer price;
+    @Column(name = "unit_price")
+    private Integer unitPrice;
 
     @Column(name = "total_price")
     private Double totalPrice;
@@ -38,9 +36,6 @@ public class Stock implements Serializable {
     @JsonIgnoreProperties(value = { "category", "suppliers", "pharmacy", "stocks", "orders" }, allowSetters = true)
     private Product product;
 
-//    @ManyToOne
-//    @JsonIgnoreProperties(value = { "systemUsers", "products", "stocks", "ordersItems" }, allowSetters = true)
-//    private Pharmacy pharmacy;
-
+    @JsonIgnore
     Boolean isActive;
 }

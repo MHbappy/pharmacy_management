@@ -5,6 +5,8 @@ import com.pharmacy.management.repository.StockRepository;
 import com.pharmacy.management.service.StockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,9 +66,15 @@ public class StockResource {
     }
 
     @GetMapping("/stocks")
-    public List<Stock> getAllStocks() {
+    public Page<Stock> getAllStocks(Pageable pageable) {
         log.debug("REST request to get all Stocks");
-        return stockService.findAll();
+        return stockService.findAllWithPagination(pageable);
+    }
+
+    @GetMapping("/stocks-by-product-id")
+    public Page<Stock> getAllStocks(@RequestParam Long productId, Pageable pageable) {
+        log.debug("REST request to get all Stocks");
+        return stockService.findAllWithPaginationAndStock(productId, pageable);
     }
 
     @GetMapping("/stocks/{id}")

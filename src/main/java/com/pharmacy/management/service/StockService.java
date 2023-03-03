@@ -4,6 +4,8 @@ import com.pharmacy.management.model.Stock;
 import com.pharmacy.management.repository.StockRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ public class StockService {
     
     public Stock save(Stock stock) {
         log.debug("Request to save Stock : {}", stock);
+        stock.setIsActive(true);
         return stockRepository.save(stock);
     }
 
@@ -40,12 +43,6 @@ public class StockService {
                 existingStock -> {
                     if (stock.getQuantity() != null) {
                         existingStock.setQuantity(stock.getQuantity());
-                    }
-                    if (stock.getUnit() != null) {
-                        existingStock.setUnit(stock.getUnit());
-                    }
-                    if (stock.getPrice() != null) {
-                        existingStock.setPrice(stock.getPrice());
                     }
                     if (stock.getTotalPrice() != null) {
                         existingStock.setTotalPrice(stock.getTotalPrice());
@@ -67,7 +64,20 @@ public class StockService {
         return stockRepository.findAll();
     }
 
-    
+
+    public Page<Stock> findAllWithPagination(Pageable pageable) {
+        log.debug("Request to get all Stocks");
+        return stockRepository.findAllByIsActive(true, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Stock> findAllWithPaginationAndStock(Long productId, Pageable pageable) {
+        log.debug("Request to get all Stocks");
+        return stockRepository.findAllByIsActiveAndProduct_Id(true, productId, pageable);
+    }
+
+
+
     @Transactional(readOnly = true)
     public Optional<Stock> findOne(Long id) {
         log.debug("Request to get Stock : {}", id);

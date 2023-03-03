@@ -57,6 +57,7 @@ public class Product implements Serializable {
     private Integer limitUnit;
 
     @Column(name = "file")
+    @Lob
     private byte[] file;
 
     @Column(name = "is_active")

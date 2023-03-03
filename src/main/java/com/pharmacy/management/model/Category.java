@@ -31,7 +31,8 @@ public class Category implements Serializable {
     private String description;
 
     @Column(name = "photo")
-    private String photo;
+    @Lob
+    private byte[] photo;
 
     @Column(name = "status")
     Boolean status;
