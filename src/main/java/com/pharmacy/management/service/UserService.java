@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -82,6 +83,15 @@ public class UserService {
             throw new CustomException("The user doesn't exist", HttpStatus.NOT_FOUND);
         }
         return appUser;
+    }
+
+
+    public Users getUserById(Long id) {
+        Optional<Users> appUser = userRepository.findById(id);
+        if (appUser.isEmpty()) {
+            throw new ResponseStatusException( HttpStatus.NOT_FOUND, "The user doesn't exist");
+        }
+        return appUser.get();
     }
 
     public List<Users> allUser() {

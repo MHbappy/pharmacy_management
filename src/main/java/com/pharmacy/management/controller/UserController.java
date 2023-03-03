@@ -11,6 +11,7 @@ import com.pharmacy.management.model.Users;
 import com.pharmacy.management.repository.UserRepository;
 import com.pharmacy.management.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -71,17 +72,24 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{username}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String delete(@PathVariable String username) {
         userService.delete(username);
         return username;
     }
 
-    @GetMapping(value = "/{username}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public UserResponseDTO search(@PathVariable String username) {
-        return modelMapper.map(userService.search(username), UserResponseDTO.class);
+    @GetMapping(value = "/{id}")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public Users search(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
+
+
+//    @GetMapping(value = "/all-user")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    public Page<Users> allUser(@RequestParam(name = "email", defaultValue = "") String email, Pageable pageable) {
+//        return userService.allUserByEmail(email, pageable);
+//    }
 
     @GetMapping(value = "/all-user")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
