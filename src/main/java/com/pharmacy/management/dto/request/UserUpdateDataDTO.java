@@ -13,7 +13,7 @@ import java.util.List;
 public class UserUpdateDataDTO {
     private Long id;
 
-    @Size(min = 4, message = "Minimum User name length: 8 characters")
+    @Size(min = 4, message = "Minimum User name length: 4 characters")
     private String username;
 
 //    @Size(min = 8, message = "Minimum email length: 5 characters")
@@ -23,7 +23,7 @@ public class UserUpdateDataDTO {
 //    @Size(min = 4, message = "Minimum Password length: 6 characters")
 //    private String password;
 
-    @Size(min = 4, message = "Minimum First name length: 2 characters")
+    @Size(min = 4, message = "Minimum First name length: 4 characters")
     private String firstName;
 
     private String lastName;

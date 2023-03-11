@@ -71,6 +71,9 @@ public class CategoryResource {
     }
 
 
+
+
+
     @GetMapping("/all-categories")
     public List<Category> getAllCategories() {
         log.debug("REST request to get all Categories");

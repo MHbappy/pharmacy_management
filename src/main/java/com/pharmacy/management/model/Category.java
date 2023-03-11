@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -25,6 +26,7 @@ public class Category implements Serializable {
     private Long id;
 
     @Column(name = "name")
+    @Size(min = 4, message = "Minimum User name length: 4 characters")
     private String name;
 
     @Column(name = "description")
@@ -36,6 +38,9 @@ public class Category implements Serializable {
 
     @Column(name = "status")
     Boolean status;
+
+    @Column(name = "have_medical_diagnosis")
+    Boolean haveMedicalDiagnosis;
 
     @Column(name = "is_limit_unit")
     Boolean isLimitUnit;

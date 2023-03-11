@@ -46,6 +46,9 @@ change password
 added status, isLimitUnit, isLimitCost on category
 added in product unitPrice, limitCost, limitUnit, file
 added stock(IN/OUT)
+-------------------------------------------------
+
+added haveMedicalDiagnosis at category
 
 
 

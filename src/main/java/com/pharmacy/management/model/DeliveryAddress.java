@@ -6,6 +6,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -24,9 +25,11 @@ public class DeliveryAddress implements Serializable {
     private Long id;
 
     @Column(name = "ship_name")
+    @Size(min = 4, message = "This field minimum length: 4 characters")
     private String shipName;
 
     @Column(name = "ship_address")
+    @Size(min = 4, message = "This field minimum length: 4 characters")
     private String shipAddress;
 
     @Column(name = "ship_city")
@@ -34,6 +37,10 @@ public class DeliveryAddress implements Serializable {
 
     @Column(name = "postal_code")
     private String postalCode;
+
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "company"}, allowSetters = true)
+    private Users users;
 
     @ManyToOne
     @JsonIgnoreProperties(value = { "suppliers", "systemUsers", "deliveryAddresses" }, allowSetters = true)
