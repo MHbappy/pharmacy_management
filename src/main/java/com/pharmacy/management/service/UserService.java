@@ -14,9 +14,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -43,6 +46,7 @@ public class UserService {
             Users appUser = userRepository.findByEmail(email);
             return jwtTokenProvider.createToken(email, appUser);
         } catch (AuthenticationException e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email/password supplied");
         }
     }
@@ -114,6 +118,18 @@ public class UserService {
     public Users whoami(HttpServletRequest req) {
         return userRepository.findByEmail(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
     }
+
+
+    public Users getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            String currentUserName = authentication.getName();
+            return userRepository.findByEmail(currentUserName);
+        }
+        return null;
+    }
+
+
 
     public String refresh(String email) {
         return jwtTokenProvider.createToken(email, userRepository.findByEmail(email));

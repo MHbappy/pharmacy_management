@@ -13,4 +13,5 @@ import java.util.List;
 @Repository
 public interface DeliveryAddressRepository extends JpaRepository<DeliveryAddress, Long> {
     List<DeliveryAddress> findAllByIsActive(Boolean isActive);
+    List<DeliveryAddress> findAllByIsActiveAndUsers_Id(Boolean isActive, Long userId);
 }

@@ -44,7 +44,6 @@ public class MedicalDiagnosisService {
         log.debug("Request to get MedicalDiagnosis : {}", id);
         return medicalDiagnosisRepository.findById(id);
     }
-
     
     public void delete(Long id) {
         log.debug("Request to delete MedicalDiagnosis : {}", id);

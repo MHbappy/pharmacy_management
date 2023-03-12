@@ -31,8 +31,6 @@ public class Orders implements Serializable {
     @Column(name = "total_price")
     private Double totalPrice;
 
-
-
     @ManyToOne
     @JsonIgnoreProperties(value = { "category", "suppliers", "pharmacy", "stocks", "orders" }, allowSetters = true)
     private Product product;

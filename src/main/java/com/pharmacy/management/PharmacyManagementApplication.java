@@ -18,6 +18,4 @@ public class PharmacyManagementApplication {
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
-
-
 }
