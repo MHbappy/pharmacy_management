@@ -15,6 +15,6 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByIsActiveAndNameContaining(Boolean isActive, String name, Pageable pageable);
-
     List<Product> findAllByIsActiveAndNameContaining(Boolean isActive, String name);
+    List<Product> findByIdInAndIsActive(List<Long> ids, Boolean isActive);
 }

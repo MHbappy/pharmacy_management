@@ -1,5 +1,6 @@
 package com.pharmacy.management.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.Cache;
@@ -23,14 +24,22 @@ public class OrdersItem implements Serializable {
     @Column(name = "price")
     private Double price;
 
+
+    @Column(name = "unit")
+    private Integer unit;
+
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "category", "suppliers", "pharmacy", "stocks", "orders" }, allowSetters = true)
+    private Product product;
 
     @ManyToOne
     @JsonIgnoreProperties(value = { "product", "systemUsers", "ordersItems", "shippers" }, allowSetters = true)
     private Orders orders;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "systemUsers", "products", "stocks", "ordersItems" }, allowSetters = true)
-    private Pharmacy pharmacy;
+//    @ManyToOne
+//    @JsonIgnoreProperties(value = { "systemUsers", "products", "stocks", "ordersItems" }, allowSetters = true)
+//    private Pharmacy pharmacy;
 }

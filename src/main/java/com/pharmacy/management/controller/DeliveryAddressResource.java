@@ -30,16 +30,29 @@ public class DeliveryAddressResource {
     private final UserService userService;
 
 
+//    @PostMapping("/delivery-addresses")
+//    public ResponseEntity<DeliveryAddress> createDeliveryAddress(@RequestBody DeliveryAddress deliveryAddress) throws URISyntaxException {
+//        log.debug("REST request to save DeliveryAddress : {}", deliveryAddress);
+//        if (deliveryAddress.getId() != null) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new deliveryAddress cannot already have an ID");
+//        }
+//        DeliveryAddress result = deliveryAddressService.save(deliveryAddress);
+//        return ResponseEntity
+//            .created(new URI("/api/delivery-addresses/" + result.getId()))
+//            .body(result);
+//    }
+
+
     @PostMapping("/delivery-addresses")
-    public ResponseEntity<DeliveryAddress> createDeliveryAddress(@RequestBody DeliveryAddress deliveryAddress) throws URISyntaxException {
+    public ResponseEntity<DeliveryAddress> createDeliveryAddress(@RequestBody DeliveryAddressRequestDTO deliveryAddress) throws URISyntaxException {
         log.debug("REST request to save DeliveryAddress : {}", deliveryAddress);
         if (deliveryAddress.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new deliveryAddress cannot already have an ID");
         }
-        DeliveryAddress result = deliveryAddressService.save(deliveryAddress);
+        DeliveryAddress result = deliveryAddressService.saveDeliveryAddress(deliveryAddress);
         return ResponseEntity
-            .created(new URI("/api/delivery-addresses/" + result.getId()))
-            .body(result);
+                .created(new URI("/api/delivery-addresses/" + result.getId()))
+                .body(result);
     }
 
     @PutMapping("/delivery-addresses/{id}")

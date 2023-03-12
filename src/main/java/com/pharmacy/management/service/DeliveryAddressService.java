@@ -37,6 +37,7 @@ public class DeliveryAddressService {
     }
 
     public DeliveryAddress saveDeliveryAddress(DeliveryAddressRequestDTO deliveryAddressRequestDTO) {
+
         Optional<Country> countryOptional = Optional.empty();
         Optional<City> cityOptional = Optional.empty();
         Optional<Region> regionOptional = Optional.empty();
@@ -63,6 +64,11 @@ public class DeliveryAddressService {
         }
 
         DeliveryAddress deliveryAddress = modelMapper.map(deliveryAddressRequestDTO, DeliveryAddress.class);
+
+        if (deliveryAddressRequestDTO.getId() != null){
+            deliveryAddress.setId(deliveryAddressRequestDTO.getId());
+        }
+
         deliveryAddress.setIsActive(true);
         deliveryAddress.setCountry(countryOptional.get());
         deliveryAddress.setCity(cityOptional.get());

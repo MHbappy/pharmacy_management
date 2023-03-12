@@ -48,7 +48,7 @@ public class Product implements Serializable {
     @Column(name = "reorder_level")
     private Integer reorderLevel;
     @Column(name = "unit_price")
-    private Integer unitPrice;
+    private Double unitPrice;
 
     @Column(name = "limit_cost")
     private Integer limitCost;

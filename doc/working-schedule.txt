@@ -49,6 +49,10 @@ added stock(IN/OUT)
 -------------------------------------------------
 
 added haveMedicalDiagnosis at category
+added medical diagnonis crud
+product is completed
+
+------------------------------------
 
 
 

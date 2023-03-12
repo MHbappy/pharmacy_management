@@ -7,3 +7,11 @@ Pharmacy included:
 - Damage Item Management
 - Inventory Management
 
+
+---------------------------------------------
+
+
+List of product id
+diagnonis
+category
+

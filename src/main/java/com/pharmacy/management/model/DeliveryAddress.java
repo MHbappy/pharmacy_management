@@ -1,5 +1,6 @@
 package com.pharmacy.management.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.Cache;
@@ -39,7 +40,8 @@ public class DeliveryAddress implements Serializable {
     private String postalCode;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = { "company"}, allowSetters = true)
+//    @JsonIgnoreProperties(value = { "company"}, allowSetters = true)
+    @JsonIgnore
     private Users users;
 
     @ManyToOne
