@@ -32,8 +32,6 @@ Add user with company
 User Edit option
 add list without pagination with city, region, county, category, suppliers, company
 
-
-
 In category add three fields and everything is boolean like status, limit  per quantity, limit per cost
 IN product, add costPerService, serviceLImitPerQuantitiy, OrderLimitPerCost, Add file, Add price
 
@@ -46,13 +44,43 @@ change password
 added status, isLimitUnit, isLimitCost on category
 added in product unitPrice, limitCost, limitUnit, file
 added stock(IN/OUT)
+
 -------------------------------------------------
 
 added haveMedicalDiagnosis at category
 added medical diagnonis crud
 product is completed
-
 ------------------------------------
+
+--------------------------------------------------------------------------------
+work with stock
+--show date time in stock list
+--add reorder level on product add edit
+--add stock field on product
+--stock update when add stock
+work with limitation with category and company policy
+--
+    Add a CompanyPolicy table:
+        1. companyId
+        2. Limit days
+        3. Limit cost
+with crud
+--
+When create user add a company policy, show search by company.
+a method where all limitation will be show
+---------------------------------------------------------------------------------
+
+work with place order and approve policy
+work with report
+Upload with Excel
+Email integration
+User wise all Invoice and other things
+
+
+
+
+
+
 
 
 

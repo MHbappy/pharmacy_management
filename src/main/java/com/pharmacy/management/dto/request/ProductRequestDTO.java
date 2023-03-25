@@ -33,10 +33,4 @@ public class ProductRequestDTO {
     private Integer limitCost;
     private Integer limitUnit;
     private byte[] file;
-
-//    private Integer unitsOnOrder;
-//    private Integer reorderLevel;
-//    @Column(name = "order_type")
-//    @Enumerated(EnumType.STRING)
-//    private OrderType orderType;
 }

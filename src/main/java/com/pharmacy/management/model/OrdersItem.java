@@ -24,7 +24,6 @@ public class OrdersItem implements Serializable {
     @Column(name = "price")
     private Double price;
 
-
     @Column(name = "unit")
     private Integer unit;
 
