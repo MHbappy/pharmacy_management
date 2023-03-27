@@ -6,6 +6,7 @@ import com.pharmacy.management.model.enumeration.InOutStatus;
 import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * A Stock.
@@ -31,6 +32,8 @@ public class Stock implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "in_out_status")
     private InOutStatus inOutStatus;
+
+    private LocalDateTime addedDateTime;
 
     @ManyToOne
     @JsonIgnoreProperties(value = { "category", "suppliers", "pharmacy", "stocks", "orders" }, allowSetters = true)
