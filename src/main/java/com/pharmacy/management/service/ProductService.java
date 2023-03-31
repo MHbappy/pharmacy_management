@@ -4,6 +4,7 @@ import com.pharmacy.management.dto.request.ProductRequestDTO;
 import com.pharmacy.management.model.Category;
 import com.pharmacy.management.model.Product;
 import com.pharmacy.management.model.Suppliers;
+import com.pharmacy.management.projection.ProductProjection;
 import com.pharmacy.management.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -95,6 +96,10 @@ public class ProductService {
     public Optional<Product> findOne(Long id) {
         log.debug("Request to get Product : {}", id);
         return productRepository.findById(id);
+    }
+
+    public List<ProductProjection> searchProductNameAndProductId(String productNameOrProductId){
+        return productRepository.searchProductNameAndProductId("%" + productNameOrProductId + "%");
     }
 
     public void delete(Long id) {

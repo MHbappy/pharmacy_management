@@ -28,6 +28,9 @@ public class Orders implements Serializable {
     @Column(name = "shipped_date")
     private LocalDate shippedDate;
 
+    @Column(name = "order_no")
+    private String orderNo;
+
     @Column(name = "required_date")
     private LocalDate requiredDate;
 

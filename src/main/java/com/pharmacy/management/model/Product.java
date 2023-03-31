@@ -48,6 +48,10 @@ public class Product implements Serializable {
 
     @Column(name = "reorder_level")
     private Integer reorderLevel;
+
+    @Column(name = "onStock")
+    private Integer onStock;
+
     @Column(name = "unit_price")
     private Double unitPrice;
 

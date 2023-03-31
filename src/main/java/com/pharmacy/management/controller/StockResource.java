@@ -9,9 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -34,7 +36,8 @@ public class StockResource {
     }
 
     @PostMapping("/stocks")
-    public ResponseEntity<Stock> createStock(@RequestBody Stock stock) throws URISyntaxException {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Stock> createStock(@RequestBody @Valid Stock stock) throws URISyntaxException {
         log.debug("REST request to save Stock : {}", stock);
         if (stock.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new stock cannot already have an ID");
@@ -46,7 +49,8 @@ public class StockResource {
     }
 
     @PutMapping("/stocks/{id}")
-    public ResponseEntity<Stock> updateStock(@PathVariable(value = "id", required = false) final Long id, @RequestBody Stock stock)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Stock> updateStock(@PathVariable(value = "id", required = false) final Long id, @RequestBody @Valid Stock stock)
          {
         log.debug("REST request to update Stock : {}, {}", id, stock);
         if (stock.getId() == null) {
@@ -66,26 +70,29 @@ public class StockResource {
     }
 
     @GetMapping("/stocks")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Page<Stock> getAllStocks(Pageable pageable) {
         log.debug("REST request to get all Stocks");
         return stockService.findAllWithPagination(pageable);
     }
 
     @GetMapping("/stocks-by-product-id")
-    public Page<Stock> getAllStocks(@RequestParam Long productId, Pageable pageable) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public Page<Stock> getAllStocks(@RequestParam String productId, Pageable pageable) {
         log.debug("REST request to get all Stocks");
         return stockService.findAllWithPaginationAndStock(productId, pageable);
     }
 
     @GetMapping("/stocks/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Stock> getStock(@PathVariable Long id) {
         log.debug("REST request to get Stock : {}", id);
         Optional<Stock> stock = stockService.findOne(id);
         return ResponseEntity.ok(stock.get());
     }
 
-
     @DeleteMapping("/stocks/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteStock(@PathVariable Long id) {
         log.debug("REST request to delete Stock : {}", id);
         stockService.delete(id);

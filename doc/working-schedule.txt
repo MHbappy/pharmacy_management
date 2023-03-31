@@ -76,6 +76,49 @@ Upload with Excel
 Email integration
 User wise all Invoice and other things
 
+shrabon:
+Stock:
+1. add datetime to stock
+2. add product Is on stock
+2. show product name with productId on dropdown on stock
+3. stock search by productId, api is : localhost:8080/api/stocks-by-product-id?productId=PHAR-123
+4. cant add minus value
+5. stock can not be delete
+6. product dropdown be search with localhost:8080/api/product-name-productId-search
+
+product:
+1. show onStock.
+2. First position dropdown with category and show category info on product list
+3. product_id can be generated prefix with category first three letter and something, if anyone not enter add someting then it will show error.
+4. add stock button on product and automatically selected product on stock.
+5. file required off.
+
+Place Order:
+1. every price with USD(Every Place)
+2. Place order time show, in list show productId Also
+3. Add delivery address with pop up.
+
+OrderList:
+1. OrderId will be replaced by new orderId
+2.
+
+----------------------------------------------
+backend done:
+----------------------------------------------
+backend remain:
+2. When stock IN add to stock And If out then minus to stock
+3. If stock edit then it will calculate with own table stock, then if it bigger than current then it will be add on product and if it less than current stock then
+it will minus to main stock.
+4. stock will not be less than 0.
+5. roduct dropdown be search with localhost:8080/api/product-name-productId-search
+6. orderId added in order table
+7.
+
+
+
+productId, and code should be unique in product
+
+
 
 
 

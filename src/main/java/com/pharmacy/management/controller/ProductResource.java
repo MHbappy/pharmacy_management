@@ -2,6 +2,7 @@ package com.pharmacy.management.controller;
 
 import com.pharmacy.management.dto.request.ProductRequestDTO;
 import com.pharmacy.management.model.Product;
+import com.pharmacy.management.projection.ProductProjection;
 import com.pharmacy.management.repository.ProductRepository;
 import com.pharmacy.management.service.ProductService;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -79,6 +81,15 @@ public class ProductResource {
         log.debug("REST request to get Product : {}", id);
         Optional<Product> product = productService.findOne(id);
         return ResponseEntity.ok(product.get());
+    }
+
+    @GetMapping("/product-name-productId-search")
+    public List<ProductProjection> searchProductNameAndProductId(@RequestParam("productNameOrProductId") String productNameOrProductId){
+        List<ProductProjection> product = productService.searchProductNameAndProductId(productNameOrProductId);
+        if (product == null){
+            return new ArrayList<>();
+        }
+        return product;
     }
 
     @DeleteMapping("/products/{id}")

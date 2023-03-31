@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,7 @@ public class StockService {
     public Stock save(Stock stock) {
         log.debug("Request to save Stock : {}", stock);
         stock.setIsActive(true);
+        stock.setAddedDateTime(LocalDateTime.now());
         return stockRepository.save(stock);
     }
 
@@ -71,9 +73,9 @@ public class StockService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Stock> findAllWithPaginationAndStock(Long productId, Pageable pageable) {
+    public Page<Stock> findAllWithPaginationAndStock(String productId, Pageable pageable) {
         log.debug("Request to get all Stocks");
-        return stockRepository.findAllByIsActiveAndProduct_Id(true, productId, pageable);
+        return stockRepository.findAllByIsActiveAndProduct_ProductId(true, productId, pageable);
     }
 
 

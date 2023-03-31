@@ -85,6 +85,8 @@ public class OrdersResource {
             orders.setUsers(users);
             orders.setTotalPrice(totalPrice);
             orders1 = ordersRepository.save(orders);
+            orders1.setOrderNo("ORD-23" + orders.getId());
+            orders1 = ordersRepository.save(orders1);
         }
 
         List<OrdersItem> ordersItemListWitOrder = new ArrayList<>();

@@ -13,5 +13,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StockRepository extends JpaRepository<Stock, Long> {
     Page<Stock> findAllByIsActive(Boolean isActive, Pageable pageable);
-    Page<Stock> findAllByIsActiveAndProduct_Id(Boolean isActive, Long productId, Pageable pageable);
+    Page<Stock> findAllByIsActiveAndProduct_ProductId(Boolean isActive, String productId, Pageable pageable);
 }
