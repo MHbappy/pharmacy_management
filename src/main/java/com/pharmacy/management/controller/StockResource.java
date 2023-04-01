@@ -71,17 +71,20 @@ public class StockResource {
 
     @GetMapping("/stocks")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public Page<Stock> getAllStocks(Pageable pageable) {
+    public Page<Stock> getAllStocks(@RequestParam(required = false) String productId, Pageable pageable) {
         log.debug("REST request to get all Stocks");
+        if (productId != null && !productId.isEmpty()){
+            return stockService.findAllWithPaginationAndStock(productId, pageable);
+        }
         return stockService.findAllWithPagination(pageable);
     }
 
-    @GetMapping("/stocks-by-product-id")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public Page<Stock> getAllStocks(@RequestParam String productId, Pageable pageable) {
-        log.debug("REST request to get all Stocks");
-        return stockService.findAllWithPaginationAndStock(productId, pageable);
-    }
+//    @GetMapping("/stocks-by-product-id")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    public Page<Stock> getAllStocks(@RequestParam String productId, Pageable pageable) {
+//        log.debug("REST request to get all Stocks");
+//        return stockService.findAllWithPaginationAndStock(productId, pageable);
+//    }
 
     @GetMapping("/stocks/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
