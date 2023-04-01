@@ -62,8 +62,9 @@ work with limitation with category and company policy
 --
     Add a CompanyPolicy table:
         1. companyId
-        2. Limit days
-        3. Limit cost
+        2. Designation
+        3. Limit days
+        4. Limit cost
 with crud
 --
 When create user add a company policy, show search by company.
@@ -99,8 +100,17 @@ Place Order:
 3. Add delivery address with pop up.
 
 OrderList:
-1. OrderId will be replaced by new orderId
-2.
+1. OrderId will be replaced by new generated orderId
+2. OrderId will be replaced
+3. Order Items list show two fields, productName and productId
+4. add delivery address button and show with {{ base_url }}/api/delivery-addresses-by-order-id.
+5. add print button -> print receipt from {{ _.base_url }}/api/order-full-info-by-order url
+
+Delivery address:
+1. add lat lon.
+
+Add CompanyPolicy table:
+
 
 ----------------------------------------------
 backend done:
@@ -110,9 +120,11 @@ backend remain:
 3. If stock edit then it will calculate with own table stock, then if it bigger than current then it will be add on product and if it less than current stock then
 it will minus to main stock.
 4. stock will not be less than 0.
-5. roduct dropdown be search with localhost:8080/api/product-name-productId-search
+5. product dropdown be search with localhost:8080/api/product-name-productId-search
 6. orderId added in order table
-7.
+7. order Item in projection added productId and productName
+8.{{ base_url }}/api/delivery-addresses-by-order-id added
+9.
 
 
 

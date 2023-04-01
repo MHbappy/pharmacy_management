@@ -90,6 +90,11 @@ public class DeliveryAddressResource {
         return deliveryAddressService.findAllByUserId(users.getId());
     }
 
+    @GetMapping("/delivery-addresses-by-order-id")
+    public DeliveryAddress deliveryAddress(@RequestParam Long orderId){
+        return deliveryAddressService.getDeliveryAddressByOrderId(orderId);
+    }
+
 
     @GetMapping("/delivery-addresses/{id}")
     public ResponseEntity<DeliveryAddress> getDeliveryAddress(@PathVariable Long id) {

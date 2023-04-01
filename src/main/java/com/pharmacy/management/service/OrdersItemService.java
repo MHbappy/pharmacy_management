@@ -54,6 +54,8 @@ public class OrdersItemService {
         return ordersItemRepository.findAll();
     }
 
+
+
     @Transactional(readOnly = true)
     public Optional<OrdersItem> findOne(Long id) {
         log.debug("Request to get OrdersItem : {}", id);

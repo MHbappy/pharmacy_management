@@ -2,11 +2,10 @@ package com.pharmacy.management.controller;
 
 import com.pharmacy.management.dto.request.OrderPlaceProductDto;
 import com.pharmacy.management.dto.request.OrderPlaceRequest;
-import com.pharmacy.management.model.Orders;
-import com.pharmacy.management.model.OrdersItem;
-import com.pharmacy.management.model.Product;
-import com.pharmacy.management.model.Users;
+import com.pharmacy.management.dto.response.OrderDetailsDTO;
+import com.pharmacy.management.model.*;
 import com.pharmacy.management.model.enumeration.DeliveryStatus;
+import com.pharmacy.management.repository.DeliveryAddressRepository;
 import com.pharmacy.management.repository.OrdersItemRepository;
 import com.pharmacy.management.repository.OrdersRepository;
 import com.pharmacy.management.repository.ProductRepository;
@@ -43,9 +42,11 @@ public class OrdersResource {
     private final ProductRepository productRepository;
     private final OrdersItemRepository ordersItemRepository;
     private final UserService userService;
+    private final DeliveryAddressRepository deliveryAddressRepository;
 
     @PostMapping("/place-orders")
     public ResponseEntity<?> createOrders(@RequestBody OrderPlaceRequest orderPlaceRequest) {
+
         if (orderPlaceRequest.getProductAndQuantityList() == null || orderPlaceRequest.getProductAndQuantityList().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please add some product!");
         }
@@ -56,6 +57,11 @@ public class OrdersResource {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found");
         }
         Users users = userService.getCurrentUser();
+
+        DeliveryAddress deliveryAddress = deliveryAddressRepository.findByIdAndUsersAndIsActive(orderPlaceRequest.getDeliveryAddressId(), users, true);
+        if (deliveryAddress == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "In correct delivery address!");
+        }
 
         Double totalPrice = 0d;
         List<OrdersItem> ordersItemList = new ArrayList<>();
@@ -83,6 +89,7 @@ public class OrdersResource {
             orders.setShippedDate(null);
             orders.setIsActive(true);
             orders.setUsers(users);
+            orders.setDeliveryAddress(deliveryAddress);
             orders.setTotalPrice(totalPrice);
             orders1 = ordersRepository.save(orders);
             orders1.setOrderNo("ORD-23" + orders.getId());
@@ -112,6 +119,10 @@ public class OrdersResource {
         return ordersList;
     }
 
+    @GetMapping("/order-full-info-by-order")
+    public OrderDetailsDTO getOrderDetailsDTO(@RequestParam Long orderId){
+        return ordersService.getOrdersFullDetailsByOrderId(orderId);
+    }
 
 //    @PostMapping("/orders")
 //    public ResponseEntity<Orders> createOrders(@RequestBody Orders orders) throws URISyntaxException {

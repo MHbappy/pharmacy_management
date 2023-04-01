@@ -36,6 +36,10 @@ public class DeliveryAddress implements Serializable {
     @Column(name = "ship_city")
     private String shipCity;
 
+    private Double locationLat;
+
+    private Double locationLon;
+
     @Column(name = "postal_code")
     private String postalCode;
 

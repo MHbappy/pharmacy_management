@@ -42,7 +42,10 @@ public class Orders implements Serializable {
     private DeliveryStatus deliveryStatus;
 
     @ManyToOne
-    @JsonIgnore
+    private DeliveryAddress deliveryAddress;
+
+    @ManyToOne
+//    @JsonIgnore
     private Users users;
 
     Boolean isActive;

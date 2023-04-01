@@ -1,5 +1,6 @@
 package com.pharmacy.management.controller;
 
+import com.pharmacy.management.dto.response.OrderDetailsDTO;
 import com.pharmacy.management.model.OrdersItem;
 import com.pharmacy.management.projection.OrderItemsProjection;
 import com.pharmacy.management.repository.OrdersItemRepository;
@@ -43,8 +44,6 @@ public class OrdersItemResource {
         }
         return ordersItemList;
     }
-
-
 
 
 

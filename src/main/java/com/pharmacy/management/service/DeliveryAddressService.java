@@ -74,6 +74,8 @@ public class DeliveryAddressService {
         deliveryAddress.setCity(cityOptional.get());
         deliveryAddress.setRegion(regionOptional.get());
         deliveryAddress.setUsers(userService.getCurrentUser());
+        deliveryAddress.setLocationLat(deliveryAddressRequestDTO.getLocationLat() == null ? 0d : deliveryAddressRequestDTO.getLocationLat());
+        deliveryAddress.setLocationLon(deliveryAddressRequestDTO.getLocationLon() == null ? 0d : deliveryAddressRequestDTO.getLocationLon());
         return deliveryAddressRepository.save(deliveryAddress);
     }
     
@@ -113,6 +115,10 @@ public class DeliveryAddressService {
     public List<DeliveryAddress> findAllByUserId(Long userId) {
         log.debug("Request to get all DeliveryAddresses");
         return deliveryAddressRepository.findAllByIsActiveAndUsers_Id(true, userId);
+    }
+
+    public DeliveryAddress getDeliveryAddressByOrderId(Long orderId){
+        return deliveryAddressRepository.getDeliveryAddressByOrderId(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery Address not found"));
     }
 
     @Transactional(readOnly = true)

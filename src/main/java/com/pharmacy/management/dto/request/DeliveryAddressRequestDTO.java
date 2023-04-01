@@ -25,4 +25,6 @@ public class DeliveryAddressRequestDTO {
     private Long cityId;
     @NotNull
     private Long regionId;
+    private Double locationLat;
+    private Double locationLon;
 }

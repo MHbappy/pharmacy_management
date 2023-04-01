@@ -1,7 +1,9 @@
 package com.pharmacy.management.projection;
 
 public interface OrderItemsProjection {
-    Integer getId();
+    Long getId();
+    String getProductName();
+    String getProductId();
     Double getPrice();
     Integer getUnit();
 }

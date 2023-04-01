@@ -1,13 +1,23 @@
 package com.pharmacy.management.service;
 
+import com.pharmacy.management.dto.response.OrderDetailsDTO;
 import com.pharmacy.management.model.City;
+import com.pharmacy.management.model.DeliveryAddress;
 import com.pharmacy.management.model.Orders;
+import com.pharmacy.management.model.OrdersItem;
+import com.pharmacy.management.projection.OrderDetailsProjection;
+import com.pharmacy.management.projection.OrderItemsProjection;
+import com.pharmacy.management.repository.DeliveryAddressRepository;
+import com.pharmacy.management.repository.OrdersItemRepository;
 import com.pharmacy.management.repository.OrdersRepository;
+import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -16,17 +26,15 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class OrdersService {
 
     private final Logger log = LoggerFactory.getLogger(OrdersService.class);
-
     private final OrdersRepository ordersRepository;
+    private final DeliveryAddressRepository deliveryAddressRepository;
+    private final OrdersItemRepository ordersItemRepository;
+    private final ModelMapper modelMapper;
 
-    public OrdersService(OrdersRepository ordersRepository) {
-        this.ordersRepository = ordersRepository;
-    }
-
-    
     public Orders save(Orders orders) {
         log.debug("Request to save Orders : {}", orders);
         return ordersRepository.save(orders);
@@ -71,6 +79,22 @@ public class OrdersService {
     public Optional<Orders> findOne(Long id) {
         log.debug("Request to get Orders : {}", id);
         return ordersRepository.findById(id);
+    }
+
+
+
+
+    public OrderDetailsDTO getOrdersFullDetailsByOrderId(Long orderId){
+        OrderDetailsProjection orderDetailsProjection = ordersRepository.getOrderDetailsByOrderId(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order not found!"));
+        DeliveryAddress deliveryAddress = deliveryAddressRepository.getDeliveryAddressByOrderId(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery address not found!"));
+        List<OrderItemsProjection> allOrderItemsByOrderId = ordersItemRepository.getAllOrderItemByOrderId(orderId);
+        if (allOrderItemsByOrderId == null || allOrderItemsByOrderId.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order item not found!");
+        }
+        OrderDetailsDTO orderDetailsDTO = modelMapper.map(orderDetailsProjection, OrderDetailsDTO.class);
+        orderDetailsDTO.setDeliveryAddress(deliveryAddress);
+        orderDetailsDTO.setOrderItems(allOrderItemsByOrderId);
+        return orderDetailsDTO;
     }
 
     
