@@ -65,6 +65,7 @@ work with limitation with category and company policy
         2. Designation
         3. Limit days
         4. Limit cost
+        5. ploicyStartFrom
 with crud
 --
 When create user add a company policy, show search by company.
@@ -106,6 +107,9 @@ OrderList:
 4. add delivery address button and show with {{ base_url }}/api/delivery-addresses-by-order-id.
 5. add print button -> print receipt from {{ _.base_url }}/api/order-full-info-by-order url
 
+Crud Company Policy:
+companyPolicyLimitTime ->  WEEKLY,MONTHLY,
+
 Delivery address:
 1. add lat lon.
 
@@ -113,13 +117,16 @@ Add CompanyPolicy table:
 
 
 ----------------------------------------------
-backend done:
+
 ----------------------------------------------
 backend remain:
 2. When stock IN add to stock And If out then minus to stock
 3. If stock edit then it will calculate with own table stock, then if it bigger than current then it will be add on product and if it less than current stock then
 it will minus to main stock.
 4. stock will not be less than 0.
+5. Add table CompanyPolicy
+-----------------------------------------------------
+backend done:
 5. product dropdown be search with localhost:8080/api/product-name-productId-search
 6. orderId added in order table
 7. order Item in projection added productId and productName
