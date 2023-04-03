@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -82,22 +84,33 @@ public class OrdersService {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
+    private final UserService userService;
 
 
     public void checkLimitation(CompanyPolicy companyPolicy, Long categoryId, List<OrderPlaceProductDto> productAndQuantityList) {
+        LocalDate todayDate = LocalDate.now();
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM");
+        String yearMonth = myFormatObj.format(todayDate);
+        Double currentOrderTotalPrice = 0d;
+
+        Users users = userService.getCurrentUser();
+        CompanyPolicy companyPolicy1 = users.getCompanyPolicy();
+
         Optional<Category> category = categoryRepository.findById(categoryId);
         if (!category.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found");
         }
-//        Double totalPrice = 0d;
+
+        //check every product limitation
         for (OrderPlaceProductDto productDto : productAndQuantityList) {
             Optional<Product> productOptional = productRepository.findById(productDto.getProductId());
+
+            //Current order total price
+            Double unitPrice = productOptional.get().getUnitPrice() == null ? 0 : productOptional.get().getUnitPrice();
+            Double singleProductTotalPrice = unitPrice * productDto.getQuantity();
+            currentOrderTotalPrice += singleProductTotalPrice;
+
             if (!productOptional.isEmpty()) {
-                //Get total price
-//                Double unitPrice = productOptional.get().getUnitPrice() == null ? 0 : productOptional.get().getUnitPrice();
-//                Double singleProductTotalPrice = unitPrice * productDto.getQuantity();
-//                totalPrice += singleProductTotalPrice;
-                //check limit for individual product unit
                 if ((category.get().getIsLimitUnit() != null && category.get().getIsLimitUnit())
                         && (productOptional.get().getLimitUnit() != null && productOptional.get().getLimitUnit() > 0)) {
                     if (productDto.getQuantity() > productOptional.get().getLimitUnit()) {
@@ -114,11 +127,10 @@ public class OrdersService {
             }
         }
 
-//        select sum(total_price) from orders where delivery_status = 'APPROVED' AND order_date = '2023-04-03' AND users_id = 1;
-
-//        if (totalPrice > companyPolicy.getLimitCost()) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company policy cost limit cross");
-//        }
+        Double currentMonthSale = productRepository.currentMonthSalesSum(yearMonth, companyPolicy1.getId()) + currentOrderTotalPrice;
+        if (currentMonthSale > companyPolicy.getLimitCost()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company policy cost limit cross");
+        }
     }
 
     public OrderDetailsDTO getOrdersFullDetailsByOrderId(Long orderId) {

@@ -86,6 +86,9 @@ public class Users {
   @JsonIgnoreProperties(value = { "country", "city", "region"}, allowSetters = true)
   private Company company;
 
+  @ManyToOne
+  private CompanyPolicy companyPolicy;
+
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
           name = "user_role",
