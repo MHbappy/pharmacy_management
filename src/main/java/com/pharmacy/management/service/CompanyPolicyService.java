@@ -18,6 +18,10 @@ public class CompanyPolicyService {
 
     public CompanyPolicy save(CompanyPolicy companyPolicy) {
         companyPolicy.setIsActive(true);
+        Integer dayOfMonth = companyPolicy.getPolicyStartFrom().getDayOfMonth();
+        if (!dayOfMonth.equals(1)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please select start of a month.");
+        }
         return companyPolicyRepository.save(companyPolicy);
     }
 

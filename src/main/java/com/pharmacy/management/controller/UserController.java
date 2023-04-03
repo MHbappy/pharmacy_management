@@ -27,7 +27,6 @@ import java.util.Objects;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserService userService;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;

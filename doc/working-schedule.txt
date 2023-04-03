@@ -113,6 +113,11 @@ company-policy-resource
 Delivery address:
 1. add lat lon.
 
+----------------------------------------------
+Date: 2023-04-03
+1. Delete field "companyPolicyLimitTime" from company policy.
+
+
 Add CompanyPolicy table:
 ----------------------------------------------
 
