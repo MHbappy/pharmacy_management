@@ -87,14 +87,14 @@ public class OrdersService {
     private final UserService userService;
 
 
-    public void checkLimitation(CompanyPolicy companyPolicy, Long categoryId, List<OrderPlaceProductDto> productAndQuantityList) {
+    public void checkLimitation(List<OrderPlaceProductDto> productAndQuantityList, Long categoryId) {
         LocalDate todayDate = LocalDate.now();
         DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM");
         String yearMonth = myFormatObj.format(todayDate);
         Double currentOrderTotalPrice = 0d;
 
         Users users = userService.getCurrentUser();
-        CompanyPolicy companyPolicy1 = users.getCompanyPolicy();
+        CompanyPolicy companyPolicy = users.getCompanyPolicy();
 
         Optional<Category> category = categoryRepository.findById(categoryId);
         if (!category.isPresent()) {
@@ -127,7 +127,7 @@ public class OrdersService {
             }
         }
 
-        Double currentMonthSale = productRepository.currentMonthSalesSum(yearMonth, companyPolicy1.getId()) + currentOrderTotalPrice;
+        Double currentMonthSale = productRepository.currentMonthSalesSum(yearMonth, companyPolicy.getId()) + currentOrderTotalPrice;
         if (currentMonthSale > companyPolicy.getLimitCost()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company policy cost limit cross");
         }

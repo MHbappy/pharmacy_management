@@ -25,6 +25,9 @@ public class Stock implements Serializable {
     @NotNull
     private Integer quantity;
 
+    @Column(name = "comments")
+    private String comments;
+
     @Column(name = "unit_price")
     @NotNull
     private Integer unitPrice;
@@ -36,6 +39,7 @@ public class Stock implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "in_out_status")
     private InOutStatus inOutStatus;
+
     private LocalDateTime addedDateTime;
     @ManyToOne
     @JsonIgnoreProperties(value = { "category", "suppliers", "pharmacy", "stocks", "orders" }, allowSetters = true)

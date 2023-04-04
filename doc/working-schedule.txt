@@ -128,24 +128,23 @@ backend remain:
 it will minus to main stock.
 4. stock will not be less than 0.
 5. Add table CompanyPolicy
+
+Test Need:
+/api/current-order-check-limitation
+/api/change-order-status
+/api/orders-by-user()
+/api/stock
+/add field comments to stock
+/upload-product-by-exel need more implementations
+
+
 -----------------------------------------------------
+
 backend done:
-5. product dropdown be search with localhost:8080/api/product-name-productId-search
-6. orderId added in order table
-7. order Item in projection added productId and productName
-8.{{ base_url }}/api/delivery-addresses-by-order-id added
+5. Product dropdown be search with localhost:8080/api/product-name-productId-search
+6. OrderId added in order table
+7. Order Item in projection added productId and productName
+8. {{ base_url }}/api/delivery-addresses-by-order-id added
 9.
 
-
-
 productId, and code should be unique in product
-
-
-
-
-
-
-
-
-
-

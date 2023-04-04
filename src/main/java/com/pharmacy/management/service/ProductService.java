@@ -1,5 +1,6 @@
 package com.pharmacy.management.service;
 
+import com.pharmacy.management.config.ExcelHelper;
 import com.pharmacy.management.dto.request.ProductRequestDTO;
 import com.pharmacy.management.model.Category;
 import com.pharmacy.management.model.Product;
@@ -7,6 +8,7 @@ import com.pharmacy.management.model.Suppliers;
 import com.pharmacy.management.projection.ProductProjection;
 import com.pharmacy.management.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +51,17 @@ public class ProductService {
             product.setUnitsOnOrder(0);
         }
         return productRepository.save(product);
+    }
+
+    public List<Product> getProductFromFile(MultipartFile file) {
+        try {
+            String fileName = file.getOriginalFilename();
+            String ext = FilenameUtils.getExtension(fileName);
+            List<Product> userRoll = ExcelHelper.excelToProduct(file.getInputStream(), ext);
+            return userRoll;
+        } catch (IOException e) {
+            throw new RuntimeException("fail to store excel data: " + e.getMessage());
+        }
     }
 
     public Optional<Product> partialUpdate(Product product) {

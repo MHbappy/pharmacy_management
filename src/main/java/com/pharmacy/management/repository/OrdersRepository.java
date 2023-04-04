@@ -1,6 +1,7 @@
 package com.pharmacy.management.repository;
 
 import com.pharmacy.management.model.*;
+import com.pharmacy.management.model.enumeration.OrderStatus;
 import com.pharmacy.management.projection.OrderDetailsProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,4 +42,8 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             "         inner join company c on c.id = u.company_id\n" +
             "where o.id = :orderId")
     Optional<OrderDetailsProjection> getOrderDetailsByOrderId(@Param("orderId") Long orderId);
+
+    Page<Orders> findByOrderStatusIn(List<OrderStatus> orderStatuses, Pageable pageable);
+
+
 }

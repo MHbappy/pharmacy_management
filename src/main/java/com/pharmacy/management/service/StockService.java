@@ -1,7 +1,11 @@
 package com.pharmacy.management.service;
 
+import com.pharmacy.management.model.Product;
 import com.pharmacy.management.model.Stock;
+import com.pharmacy.management.model.enumeration.InOutStatus;
+import com.pharmacy.management.repository.ProductRepository;
 import com.pharmacy.management.repository.StockRepository;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -17,21 +21,38 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class StockService {
 
     private final Logger log = LoggerFactory.getLogger(StockService.class);
-
     private final StockRepository stockRepository;
-
-    public StockService(StockRepository stockRepository) {
-        this.stockRepository = stockRepository;
-    }
+    private final ProductRepository productRepository;
 
     
     public Stock save(Stock stock) {
         log.debug("Request to save Stock : {}", stock);
         stock.setIsActive(true);
         stock.setAddedDateTime(LocalDateTime.now());
+
+        if (stock.getProduct() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product not found");
+        }
+
+        if (stock.getInOutStatus().equals(InOutStatus.IN)){
+            Product product = stock.getProduct();
+            Integer currentProductStock = (product.getOnStock() == null ? 0 : product.getOnStock()) + stock.getQuantity();
+            product.setOnStock(currentProductStock);
+            productRepository.save(product);
+        }
+        if (stock.getInOutStatus().equals(InOutStatus.OUT)){
+            Product product = stock.getProduct();
+            Integer currentProductStock = (product.getOnStock() == null ? 0 : product.getOnStock()) - stock.getQuantity();
+            if (currentProductStock < 0){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full stock can not be negative");
+            }
+            product.setOnStock(currentProductStock);
+            productRepository.save(product);
+        }
         return stockRepository.save(stock);
     }
 

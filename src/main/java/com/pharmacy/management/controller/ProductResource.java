@@ -1,6 +1,7 @@
 package com.pharmacy.management.controller;
 
 import com.pharmacy.management.dto.request.ProductRequestDTO;
+import com.pharmacy.management.dto.request.ResponseMessage;
 import com.pharmacy.management.model.Product;
 import com.pharmacy.management.projection.ProductProjection;
 import com.pharmacy.management.repository.ProductRepository;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,7 +30,6 @@ public class ProductResource {
     private final Logger log = LoggerFactory.getLogger(ProductResource.class);
 
     private final ProductService productService;
-
     private final ProductRepository productRepository;
 
     public ProductResource(ProductService productService, ProductRepository productRepository) {
@@ -91,6 +92,21 @@ public class ProductResource {
         }
         return product;
     }
+
+    @PostMapping("/upload-product-by-exel")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+        String message = "";
+        try {
+            return ResponseEntity.ok(productService.getProductFromFile(file));
+        } catch (Exception e) {
+            e.printStackTrace();
+            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+        }
+    }
+
+
+
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {

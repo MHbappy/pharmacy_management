@@ -1,7 +1,6 @@
 package com.pharmacy.management.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pharmacy.management.model.enumeration.DeliveryStatus;
+import com.pharmacy.management.model.enumeration.OrderStatus;
 import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -37,9 +36,9 @@ public class Orders implements Serializable {
     @Column(name = "total_price")
     private Double totalPrice;
 
-    @Column(name = "delivery_status")
+    @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
-    private DeliveryStatus deliveryStatus;
+    private OrderStatus orderStatus;
 
     @ManyToOne
     private DeliveryAddress deliveryAddress;

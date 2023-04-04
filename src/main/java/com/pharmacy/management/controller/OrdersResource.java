@@ -4,17 +4,16 @@ import com.pharmacy.management.dto.request.OrderPlaceProductDto;
 import com.pharmacy.management.dto.request.OrderPlaceRequest;
 import com.pharmacy.management.dto.response.OrderDetailsDTO;
 import com.pharmacy.management.model.*;
-import com.pharmacy.management.model.enumeration.DeliveryStatus;
-import com.pharmacy.management.repository.DeliveryAddressRepository;
-import com.pharmacy.management.repository.OrdersItemRepository;
-import com.pharmacy.management.repository.OrdersRepository;
-import com.pharmacy.management.repository.ProductRepository;
+import com.pharmacy.management.model.enumeration.OrderStatus;
+import com.pharmacy.management.model.enumeration.ROLE;
+import com.pharmacy.management.repository.*;
+import com.pharmacy.management.security.SecurityUtils;
 import com.pharmacy.management.service.OrdersService;
 import com.pharmacy.management.service.UserService;
 import lombok.AllArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,13 +21,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 
@@ -43,6 +39,7 @@ public class OrdersResource {
     private final OrdersItemRepository ordersItemRepository;
     private final UserService userService;
     private final DeliveryAddressRepository deliveryAddressRepository;
+    private final OrderApproveRepository orderApproveRepository;
 
     @PostMapping("/place-orders")
     public ResponseEntity<?> createOrders(@RequestBody OrderPlaceRequest orderPlaceRequest) {
@@ -85,7 +82,7 @@ public class OrdersResource {
             Orders orders = new Orders();
             orders.setOrderDate(LocalDateTime.now());
             orders.setRequiredDate(LocalDate.now().plusDays(3));
-            orders.setDeliveryStatus(DeliveryStatus.PENDING);
+            orders.setOrderStatus(OrderStatus.PENDING);
             orders.setShippedDate(null);
             orders.setIsActive(true);
             orders.setUsers(users);
@@ -114,14 +111,111 @@ public class OrdersResource {
     @GetMapping("/orders-by-user")
     public Page<Orders> getAllOrders(Pageable pageable) {
         log.debug("REST request to get all Orders");
+        Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
+        Boolean isMedicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.MEDICAL_STUFF.toString());
+        Boolean isTechnicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.TECHNICAL_STAFF.toString());
+        Boolean isEmployee = SecurityUtils.hasCurrentUserThisAuthority(ROLE.EMPLOYEE.toString());
+
         Users users = userService.getCurrentUser();
         Page<Orders> ordersList = ordersRepository.findAllByUsers(users, pageable);
+
+        if (isAdmin){
+            ordersList = ordersRepository.findAll(pageable);
+        }else if (isMedicalStaff){
+            List<OrderStatus> orderStatuses = new ArrayList<>();
+            orderStatuses.add(OrderStatus.APPROVED);
+            orderStatuses.add(OrderStatus.PENDING);
+            orderStatuses.add(OrderStatus.DENIED);
+            ordersList = ordersRepository.findByOrderStatusIn(orderStatuses, pageable);
+        }else if (isTechnicalStaff){
+            List<OrderStatus> orderStatuses = new ArrayList<>();
+            orderStatuses.add(OrderStatus.APPROVED);
+            orderStatuses.add(OrderStatus.DELIVERED);
+            ordersList = ordersRepository.findByOrderStatusIn(orderStatuses, pageable);
+        }else if (isEmployee){
+            ordersList = ordersRepository.findAllByUsers(users, pageable);
+        }
         return ordersList;
     }
 
     @GetMapping("/order-full-info-by-order")
     public OrderDetailsDTO getOrderDetailsDTO(@RequestParam Long orderId){
         return ordersService.getOrdersFullDetailsByOrderId(orderId);
+    }
+
+    //This is for print purpose
+    @GetMapping("/current-order-check-limitation")
+    public void getCurrentOrderDetailsDTO(@RequestBody List<OrderPlaceProductDto> productAndQuantityList, @RequestParam("categoryId") Long categoryId){
+        ordersService.checkLimitation(productAndQuantityList, categoryId);
+    }
+
+
+    @PostMapping("/change-order-status")
+    public boolean changeOrderStatus(@RequestParam("productId") Long orderId, @RequestParam("orderStatus") OrderStatus orderStatus, @RequestParam(value = "comments",defaultValue = "") String comments){
+        Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
+        Boolean isMedicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.MEDICAL_STUFF.toString());
+        Boolean isTechnicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.TECHNICAL_STAFF.toString());
+        Boolean isEmployee = SecurityUtils.hasCurrentUserThisAuthority(ROLE.EMPLOYEE.toString());
+
+
+        Optional<Orders> orders = ordersRepository.findById(orderId);
+        Users users = userService.getCurrentUser();
+        Boolean isChanged = false;
+
+        if (!orders.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product is not found");
+        }
+
+        if (isAdmin){
+            orders.get().setOrderStatus(orderStatus);
+            isChanged = true;
+        }
+
+        if (isMedicalStaff){
+            if (orders.get().getOrderStatus().equals(OrderStatus.PENDING) && (orderStatus.equals(OrderStatus.PENDING) || orderStatus.equals(OrderStatus.DENIED))){
+                orders.get().setOrderStatus(orderStatus);
+                isChanged = true;
+            }else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
+            }
+        }
+
+
+        //Technical staff can do only approved to delivered
+        if (isTechnicalStaff){
+            if (orders.get().getOrderStatus().equals(OrderStatus.APPROVED) && orderStatus.equals(OrderStatus.DELIVERED)){
+                orders.get().setOrderStatus(orderStatus);
+                isChanged = true;
+            }else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
+            }
+        }
+
+        //Technical staff can do only approved to delivered
+        if (isEmployee){
+            //if not own user then thow a bad request
+            if (!users.getId().equals(orders.get().getUsers().getId())){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
+            }
+
+            if (orders.get().getOrderStatus().equals(OrderStatus.CANCELLED) && orderStatus.equals(OrderStatus.PENDING)){
+                orders.get().setOrderStatus(orderStatus);
+                isChanged = true;
+            }else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
+            }
+        }
+
+        if (isChanged){
+            OrderApprove orderApprove = new OrderApprove();
+            orderApprove.setOrders(orders.get());
+            orderApprove.setApprovedBy(users);
+            orderApprove.setComments(comments);
+            orderApprove.setOrders(orders.get());
+            orderApprove.setIsActive(true);
+            orderApproveRepository.save(orderApprove);
+        }
+        return isChanged;
     }
 
 //    @PostMapping("/orders")

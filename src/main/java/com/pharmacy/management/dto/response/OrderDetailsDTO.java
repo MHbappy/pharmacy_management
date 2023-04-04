@@ -1,7 +1,6 @@
 package com.pharmacy.management.dto.response;
 
 import com.pharmacy.management.model.DeliveryAddress;
-import com.pharmacy.management.model.enumeration.DeliveryStatus;
 import com.pharmacy.management.projection.OrderItemsProjection;
 import lombok.Data;
 
