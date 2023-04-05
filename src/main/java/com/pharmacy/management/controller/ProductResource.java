@@ -35,6 +35,11 @@ public class ProductResource {
 
     @PostMapping("/products")
     public ResponseEntity<Product> createProduct(@RequestBody ProductRequestDTO productRequestDTO) throws URISyntaxException {
+
+        Optional<Product> productOptional = productRepository.findByNameAndIsActive(productRequestDTO.getName(), true);
+        if (productOptional.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product name should be unique");
+        }
         Product result = productService.save(productRequestDTO);
 
         return ResponseEntity
@@ -94,7 +99,8 @@ public class ProductResource {
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         String message = "";
         try {
-            return ResponseEntity.ok(productService.getProductFromFile(file));
+//            return ResponseEntity.ok(productService.getProductFromFile(file));
+            return ResponseEntity.ok(true);
         } catch (Exception e) {
             e.printStackTrace();
             message = "Could not upload the file: " + file.getOriginalFilename() + "!";

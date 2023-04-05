@@ -25,6 +25,10 @@ public class SuppliersService {
     
     public Suppliers save(Suppliers suppliers) {
         log.debug("Request to save Suppliers : {}", suppliers);
+        Optional<Suppliers> suppliersOptional = suppliersRepository.findByCompanyNameAndIsActive(suppliers.getCompanyName(), true);
+        if (suppliersOptional.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Supplier name should be unique");
+        }
         return suppliersRepository.save(suppliers);
     }
 

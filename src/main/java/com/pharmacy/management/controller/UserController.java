@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.pharmacy.management.dto.request.PasswordChangeDTO;
+import com.pharmacy.management.dto.request.ResponseMessage;
 import com.pharmacy.management.dto.request.UserUpdateDataDTO;
 import com.pharmacy.management.dto.response.UserDataDTO;
 import com.pharmacy.management.dto.response.UserResponseDTO;
@@ -16,8 +17,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -43,6 +46,17 @@ public class UserController {
         return userService.signup(modelMapper.map(user, Users.class));
     }
 
+    @PostMapping("/upload-user-by-exel")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+        String message = "";
+        try {
+            return ResponseEntity.ok(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+        }
+    }
 
     @PostMapping("/update-password")
     public Boolean updatePassword(@Valid @RequestBody PasswordChangeDTO passwordChangeDTO) {
@@ -71,7 +85,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{username}")
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_')")
     public String delete(@PathVariable String username) {
         userService.delete(username);
         return username;

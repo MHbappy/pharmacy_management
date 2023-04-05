@@ -38,14 +38,19 @@ public class StockService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product not found");
         }
 
+        Optional<Product> productOptional = productRepository.findById(stock.getProduct().getId());
+        if (!productOptional.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product not found");
+        }
+        Product product = productOptional.get();
+
         if (stock.getInOutStatus().equals(InOutStatus.IN)){
-            Product product = stock.getProduct();
             Integer currentProductStock = (product.getOnStock() == null ? 0 : product.getOnStock()) + stock.getQuantity();
             product.setOnStock(currentProductStock);
             productRepository.save(product);
         }
+
         if (stock.getInOutStatus().equals(InOutStatus.OUT)){
-            Product product = stock.getProduct();
             Integer currentProductStock = (product.getOnStock() == null ? 0 : product.getOnStock()) - stock.getQuantity();
             if (currentProductStock < 0){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full stock can not be negative");

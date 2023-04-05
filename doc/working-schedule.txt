@@ -138,6 +138,7 @@ Test Need:
 /upload-product-by-exel need more implementations
 
 
+
 -----------------------------------------------------
 
 backend done:
@@ -147,7 +148,37 @@ backend done:
 8. {{ base_url }}/api/delivery-addresses-by-order-id added
 9.
 
-productId, and code should be unique in product
 
-Delete productId from front end it will be auto generate
+productId, and code should be unique in product
+------------------------------------------------------------------------------------------------
+
+more development:
+/api/dashboard-info -- implementation
+/api/upload-user-by-exel -- implementation
+
+shrabon:
+1. Dashboard api integration:
+/api/dashboard-info
+*EMPLOYEE: totalPendingOrder, totalApprovedOrder, totalCancelOrder, totalDeliveredOrder, totalOrder
+*Admin and all user can show every field
+
+
+
+USER:
+3. add a button import users by excel;
+/api/upload-user-by-exel
+
+SUPPLIER:
+required field :: Company Name, Supplier Address, Select Country, Phone, Postal Code , others are non required
+companyName minimum 2 character
+
+PRODUCT:
+Description,Strength, Strength, file  no need required.
+Product ID will be delete from front end because it will be auto generated.
+Add category field
+
+Company:
+required field: company name, phone, email, mobile phone, address, country
+
+
 

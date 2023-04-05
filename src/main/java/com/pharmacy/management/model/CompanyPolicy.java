@@ -1,6 +1,5 @@
 package com.pharmacy.management.model;
 
-import com.pharmacy.management.model.enumeration.CompanyPolicyLimit;
 import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -22,10 +21,6 @@ public class CompanyPolicy {
     @Column(name = "designation")
     @NotNull
     private String designation;
-
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "company_policy_limit_time")
-//    private CompanyPolicyLimit companyPolicyLimitTime;
 
     @Column(name = "limit_cost")
     @NotNull

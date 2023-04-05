@@ -4,6 +4,7 @@ package com.pharmacy.management.controller;
 import com.pharmacy.management.model.Suppliers;
 import com.pharmacy.management.repository.SuppliersRepository;
 import com.pharmacy.management.service.SuppliersService;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -23,17 +24,11 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class SuppliersResource {
     private final Logger log = LoggerFactory.getLogger(SuppliersResource.class);
-
     private final SuppliersService suppliersService;
-
     private final SuppliersRepository suppliersRepository;
-
-    public SuppliersResource(SuppliersService suppliersService, SuppliersRepository suppliersRepository) {
-        this.suppliersService = suppliersService;
-        this.suppliersRepository = suppliersRepository;
-    }
 
     @PostMapping("/suppliers")
     public ResponseEntity<Suppliers> createSuppliers(@RequestBody @Valid Suppliers suppliers) throws URISyntaxException {

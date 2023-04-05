@@ -35,6 +35,10 @@ public class OrdersService {
     private final OrdersItemRepository ordersItemRepository;
     private final ModelMapper modelMapper;
 
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+    private final UserService userService;
+
     public Orders save(Orders orders) {
         log.debug("Request to save Orders : {}", orders);
         return ordersRepository.save(orders);
@@ -80,11 +84,6 @@ public class OrdersService {
         log.debug("Request to get Orders : {}", id);
         return ordersRepository.findById(id);
     }
-
-
-    private final CategoryRepository categoryRepository;
-    private final ProductRepository productRepository;
-    private final UserService userService;
 
 
     public void checkLimitation(List<OrderPlaceProductDto> productAndQuantityList, Long categoryId) {

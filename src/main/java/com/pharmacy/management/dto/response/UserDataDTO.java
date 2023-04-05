@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pharmacy.management.model.Company;
+import com.pharmacy.management.model.CompanyPolicy;
 import com.pharmacy.management.model.Roles;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -60,6 +61,8 @@ public class UserDataDTO {
   private String codeLocation;
 
   private Company company;
+
+  private CompanyPolicy companyPolicy;
 
   List<Roles> appUserRoles;
 
