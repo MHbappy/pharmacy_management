@@ -50,7 +50,9 @@ public class ProductService {
             product.setReorderLevel(0);
             product.setUnitsOnOrder(0);
         }
-        return productRepository.save(product);
+        Product product1 = productRepository.save(product);
+        product1.setProductId("PROD-23-" + product1.getId());
+        return productRepository.save(product1);
     }
 
     public List<Product> getProductFromFile(MultipartFile file) {

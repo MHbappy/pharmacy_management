@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Spring Data SQL repository for the Company entity.
@@ -16,4 +17,5 @@ import java.util.List;
 public interface CompanyRepository extends JpaRepository<Company, Long> {
     Page<Company> findAllByIsActiveAndNameContaining(Boolean isActive, String name, Pageable pageable);
     List<Company> findAllByIsActiveAndNameContaining(Boolean isActive, String name);
+    Optional<Company> findByNameAndIsActive(String name, Boolean isActive);
 }

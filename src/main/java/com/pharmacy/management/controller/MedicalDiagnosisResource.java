@@ -45,6 +45,11 @@ public class MedicalDiagnosisResource {
         if (medicalDiagnosis.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new medicalDiagnosis cannot already have an ID");
         }
+        Optional<MedicalDiagnosis> medicalDiagnosisOptional = medicalDiagnosisRepository.findByNameAndIsActive(medicalDiagnosis.getName(), true);
+        if (medicalDiagnosisOptional.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Medical diagnosis name should be unique.");
+        }
+
         MedicalDiagnosis result = medicalDiagnosisService.save(medicalDiagnosis);
         return ResponseEntity
             .created(new URI("/api/medical-diagnoses/" + result.getId()))

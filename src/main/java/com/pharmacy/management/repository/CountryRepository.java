@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Spring Data SQL repository for the Country entity.
@@ -16,4 +17,5 @@ import java.util.List;
 public interface CountryRepository extends JpaRepository<Country, Long> {
     Page<Country> findAllByIsActiveAndNameContaining(Boolean isActive, String name, Pageable pageable);
     List<Country> findAllByIsActiveAndNameContaining(Boolean isActive, String name);
+    Optional<Country> findByNameAndIsActive(String name, Boolean isActive);
 }

@@ -40,6 +40,11 @@ public class CompanyResource {
         if (company.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new company cannot already have an ID");
         }
+        Optional<Company> companyOptional = companyRepository.findByNameAndIsActive(company.getName(), true);
+        if (companyOptional.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company name should be unique");
+        }
+
         Company result = companyService.save(company);
         return ResponseEntity
             .created(new URI("/api/companies/" + result.getId()))

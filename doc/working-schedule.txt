@@ -148,3 +148,6 @@ backend done:
 9.
 
 productId, and code should be unique in product
+
+Delete productId from front end it will be auto generate
+

@@ -40,6 +40,11 @@ public class CountryResource {
         if (country.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new country cannot already have an ID");
         }
+        Optional<Country> countryOptional = countryRepository.findByNameAndIsActive(country.getName(), true);
+        if (countryOptional.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Country name should be unique.");
+        }
+
         Country result = countryService.save(country);
         return ResponseEntity
             .created(new URI("/api/countries/" + result.getId()))

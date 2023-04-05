@@ -41,6 +41,12 @@ public class CityResource {
         if (city.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new city cannot already have an ID");
         }
+
+        Optional<City> cityOptional = cityRepository.findByNameAndIsActive(city.getName(), true);
+        if (cityOptional.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "City name should be unique");
+        }
+
         City result = cityService.save(city);
         return ResponseEntity
             .created(new URI("/api/cities/" + result.getId()))

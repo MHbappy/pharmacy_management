@@ -3,6 +3,7 @@ package com.pharmacy.management.controller;
 import com.pharmacy.management.model.CompanyPolicy;
 import com.pharmacy.management.repository.CompanyPolicyRepository;
 import com.pharmacy.management.service.CompanyPolicyService;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,16 +21,12 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class CompanyPolicyResource {
 
     private final Logger log = LoggerFactory.getLogger(CompanyPolicyResource.class);
     private final CompanyPolicyService companyPolicyService;
     private final CompanyPolicyRepository companyPolicyRepository;
-
-    public CompanyPolicyResource(CompanyPolicyService companyPolicyService, CompanyPolicyRepository companyPolicyRepository) {
-        this.companyPolicyService = companyPolicyService;
-        this.companyPolicyRepository = companyPolicyRepository;
-    }
 
     @PostMapping("/company-policies")
     public ResponseEntity<CompanyPolicy> createCompanyPolicy(@RequestBody @Valid CompanyPolicy companyPolicy) throws URISyntaxException {
@@ -37,6 +34,11 @@ public class CompanyPolicyResource {
         if (companyPolicy.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new companyPolicy cannot already have an ID");
         }
+        Optional<CompanyPolicy> companyPolicy1 = companyPolicyRepository.findByDesignationAndCompanyAndIsActive(companyPolicy.getDesignation(), companyPolicy.getCompany(), true);
+        if (companyPolicy1.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company designation with company name should be unique");
+        }
+
         CompanyPolicy result = companyPolicyService.save(companyPolicy);
         return ResponseEntity
             .created(new URI("/api/company-policies/" + result.getId()))

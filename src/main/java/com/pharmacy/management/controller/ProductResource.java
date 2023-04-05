@@ -6,6 +6,7 @@ import com.pharmacy.management.model.Product;
 import com.pharmacy.management.projection.ProductProjection;
 import com.pharmacy.management.repository.ProductRepository;
 import com.pharmacy.management.service.ProductService;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -25,21 +26,17 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class ProductResource {
 
     private final Logger log = LoggerFactory.getLogger(ProductResource.class);
-
     private final ProductService productService;
     private final ProductRepository productRepository;
-
-    public ProductResource(ProductService productService, ProductRepository productRepository) {
-        this.productService = productService;
-        this.productRepository = productRepository;
-    }
 
     @PostMapping("/products")
     public ResponseEntity<Product> createProduct(@RequestBody ProductRequestDTO productRequestDTO) throws URISyntaxException {
         Product result = productService.save(productRequestDTO);
+
         return ResponseEntity
             .created(new URI("/api/products/" + result.getId()))
             .body(result);

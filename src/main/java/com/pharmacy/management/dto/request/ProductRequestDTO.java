@@ -19,11 +19,12 @@ public class ProductRequestDTO {
     private String name;
     @NotNull
     private String code;
-    @NotNull
-    private String productId;
+//    @NotNull
+//    private String productId;
     private String decription;
     private String strength;
     private String stsMedicine;
+    @NotNull
     private Long categoryId;
     private Long supplierId;
     @Enumerated(EnumType.STRING)

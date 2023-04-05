@@ -10,9 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -27,13 +29,19 @@ public class CategoryResource {
     private final CategoryService categoryService;
     private final CategoryRepository categoryRepository;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/categories")
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) throws URISyntaxException {
+    public ResponseEntity<Category> createCategory(@RequestBody @Valid Category category) throws URISyntaxException {
         log.debug("REST request to save Category : {}", category);
         if (category.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new category cannot already have an ID");
         }
         category.setIsActive(true);
+        Optional<Category> category1 = categoryRepository.findByNameAndIsActive(category.getName(), true);
+
+        if (category1.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category Name Should be unique");
+        }
         Category result = categoryService.save(category);
         return ResponseEntity
                 .created(new URI("/api/categories/" + result.getId()))
@@ -41,6 +49,7 @@ public class CategoryResource {
     }
 
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/categories/{id}")
     public ResponseEntity<Category> updateCategory(
             @PathVariable(value = "id", required = false) final Long id,
@@ -64,22 +73,21 @@ public class CategoryResource {
                 .body(result);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/categories")
     public Page<Category> getAllCategories(Pageable pageable) {
         log.debug("REST request to get all Categories");
         return categoryService.findAll(pageable);
     }
 
-
-
-
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all-categories")
     public List<Category> getAllCategories() {
         log.debug("REST request to get all Categories");
         return categoryService.findAll();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/categories/{id}")
     public ResponseEntity<Category> getCategory(@PathVariable Long id) {
         log.debug("REST request to get Category : {}", id);
@@ -88,6 +96,7 @@ public class CategoryResource {
         return ResponseEntity.ok(category.get());
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/categories/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         log.debug("REST request to delete Category : {}", id);
