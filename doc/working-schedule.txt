@@ -181,4 +181,20 @@ Company:
 required field: company name, phone, email, mobile phone, address, country
 
 
+--------------------------2023-04-07----------------------
+shudhu admin diye login korle dashboard dekha jacche, kintu ono gulate dekha jacche nah
+1. Dashboard api integration:
+/api/dashboard-info
+*EMPLOYEE: totalPendingOrder, totalApprovedOrder, totalCancelOrder, totalDeliveredOrder, totalOrder
+*Admin and all user can show every field
+
+2. order list e order er details ta nai, order details mane holo, koto gula product nise and tar information
+aps holo : {{ _.base_url }}/api/orders-items-by-order
+ar order list e print er ekta button deyear kotha chilo jeta diye full order er info print korte parbe.
+ar ei api holo:
+{{ _.base_url }}/api/order-full-info-by-order url
+
+
+
+
 

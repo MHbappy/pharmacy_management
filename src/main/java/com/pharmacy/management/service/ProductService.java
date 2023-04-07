@@ -42,6 +42,7 @@ public class ProductService {
         if (productRequestDTO.getCategoryId() != null){
             product.setCategory(new Category(productRequestDTO.getCategoryId()));
         }
+
         if (productRequestDTO.getSupplierId() != null){
             product.setSuppliers(new Suppliers(productRequestDTO.getSupplierId()));
         }

@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserRepository extends JpaRepository<Users, Long> {
   boolean existsByEmail(String email);
 
-  Page<Users> findAllByIsActiveAndEmailContaining(Boolean isActive, String email, Pageable pageable);
+  Page<Users> findAllByIsActiveAndEmailContainingIgnoreCase(Boolean isActive, String email, Pageable pageable);
 
   Users findByEmail(String email);
 

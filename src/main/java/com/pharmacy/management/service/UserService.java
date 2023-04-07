@@ -106,12 +106,8 @@ public class UserService {
         return appUser;
     }
 
-
     public Page<Users> allUserByEmail(String email, Pageable pageable) {
-        Page<Users> appUser = userRepository.findAllByIsActiveAndEmailContaining(true, email, pageable);
-        if (appUser.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user doesn't exist");
-        }
+        Page<Users> appUser = userRepository.findAllByIsActiveAndEmailContainingIgnoreCase(true, email, pageable);
         return appUser;
     }
 
