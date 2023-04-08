@@ -67,34 +67,34 @@ public class ProductService {
         }
     }
 
-    public Optional<Product> partialUpdate(Product product) {
-        log.debug("Request to partially update Product : {}", product);
-
-        return productRepository
-            .findById(product.getId())
-            .map(
-                existingProduct -> {
-                    if (product.getName() != null) {
-                        existingProduct.setName(product.getName());
-                    }
-                    if (product.getDecription() != null) {
-                        existingProduct.setDecription(product.getDecription());
-                    }
-                    if (product.getUnitsOnOrder() != null) {
-                        existingProduct.setUnitsOnOrder(product.getUnitsOnOrder());
-                    }
-                    if (product.getReorderLevel() != null) {
-                        existingProduct.setReorderLevel(product.getReorderLevel());
-                    }
-                    if (product.getIsActive() != null) {
-                        existingProduct.setIsActive(product.getIsActive());
-                    }
-
-                    return existingProduct;
-                }
-            )
-            .map(productRepository::save);
-    }
+//    public Optional<Product> partialUpdate(Product product) {
+//        log.debug("Request to partially update Product : {}", product);
+//
+//        return productRepository
+//            .findById(product.getId())
+//            .map(
+//                existingProduct -> {
+//                    if (product.getName() != null) {
+//                        existingProduct.setName(product.getName());
+//                    }
+//                    if (product.getDecription() != null) {
+//                        existingProduct.setDecription(product.getDecription());
+//                    }
+//                    if (product.getUnitsOnOrder() != null) {
+//                        existingProduct.setUnitsOnOrder(product.getUnitsOnOrder());
+//                    }
+//                    if (product.getReorderLevel() != null) {
+//                        existingProduct.setReorderLevel(product.getReorderLevel());
+//                    }
+//                    if (product.getIsActive() != null) {
+//                        existingProduct.setIsActive(product.getIsActive());
+//                    }
+//
+//                    return existingProduct;
+//                }
+//            )
+//            .map(productRepository::save);
+//    }
 
     @Transactional(readOnly = true)
     public Page<Product> findAllByName(@RequestParam(name = "name", defaultValue = "") String name, Pageable pageable) {
