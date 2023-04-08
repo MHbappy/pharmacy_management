@@ -96,6 +96,7 @@ public class ProductService {
 //            .map(productRepository::save);
 //    }
 
+
     @Transactional(readOnly = true)
     public Page<Product> findAllByName(@RequestParam(name = "name", defaultValue = "") String name, Pageable pageable) {
         log.debug("Request to get all Products");

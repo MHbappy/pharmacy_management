@@ -118,14 +118,17 @@ public class OrdersService {
                 //check limit for individual product price
                 if ((category.get().getIsLimitCost() != null && category.get().getIsLimitCost()) && (productOptional.get().getLimitCost() != null && productOptional.get().getLimitCost() > 0)) {
                     Double price = productOptional.get().getUnitPrice() * productDto.getQuantity();
-                    if (price > productOptional.get().getLimitUnit()) {
+                    if (price > productOptional.get().getLimitCost()) {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product " + productOptional.get().getName() + " cost limit is cross");
                     }
                 }
             }
         }
 
-        Double currentMonthSale = productRepository.currentMonthSalesSum(yearMonth, companyPolicy.getId()) + currentOrderTotalPrice;
+        Double currentMonthSaleAmount = productRepository.currentMonthSalesSum("%" + yearMonth +"%", users.getId());
+        Double currentMonthSale = (currentMonthSaleAmount == null ? 0 :  currentMonthSaleAmount) + currentOrderTotalPrice;
+        log.info("Total cost : " + currentMonthSale);
+
         if (currentMonthSale > companyPolicy.getLimitCost()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company policy cost limit cross");
         }

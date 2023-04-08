@@ -163,7 +163,7 @@ public class OrdersResource {
     }
 
     //This is for print purpose
-    @GetMapping("/current-order-check-limitation")
+    @PostMapping("/current-order-check-limitation")
     public void getCurrentOrderDetailsDTO(@RequestBody List<OrderPlaceProductDto> productAndQuantityList, @RequestParam("categoryId") Long categoryId){
         ordersService.checkLimitation(productAndQuantityList, categoryId);
     }
