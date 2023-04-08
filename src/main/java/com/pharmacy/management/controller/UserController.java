@@ -134,9 +134,15 @@ public class UserController {
         return userService.allUserByEmail(email, pageable);
     }
 
+//    @GetMapping(value = "/me")
+//    public UserResponseDTO whoami(HttpServletRequest req) {
+//        return modelMapper.map(userService.whoami(req), UserResponseDTO.class);
+//    }
+
+
     @GetMapping(value = "/me")
-    public UserResponseDTO whoami(HttpServletRequest req) {
-        return modelMapper.map(userService.whoami(req), UserResponseDTO.class);
+    public Users whoami() {
+        return userService.getCurrentUser();
     }
 
     @GetMapping("/refresh")
