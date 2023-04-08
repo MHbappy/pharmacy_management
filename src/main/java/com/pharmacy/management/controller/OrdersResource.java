@@ -110,9 +110,23 @@ public class OrdersResource {
     }
 
     @GetMapping("/orders-by-user")
-    public Page<Orders> getAllOrders(Pageable pageable) {
+    public Page<Orders> getAllOrders(@RequestParam(value = "orderNo", required = false) String orderNo, Pageable pageable) {
         log.debug("REST request to get all Orders");
+        Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
+
+        //for admin user
         Users users = userService.getCurrentUser();
+        if (isAdmin){
+            if (orderNo != null && !orderNo.isEmpty()){
+                return ordersRepository.findAllByOrderNo(orderNo, pageable);
+            }
+            return ordersRepository.findAll(pageable);
+        }
+
+        //for non admin user
+        if (orderNo != null && !orderNo.isEmpty()){
+            return ordersRepository.findAllByUsersAndOrderNo(users, orderNo, pageable);
+        }
         Page<Orders> ordersList = ordersRepository.findAllByUsers(users, pageable);
         return ordersList;
     }
@@ -226,6 +240,13 @@ public class OrdersResource {
     public OrderDetailsDTO getOrderDetailsDTO(@RequestParam Long orderId){
         return ordersService.getOrdersFullDetailsByOrderId(orderId);
     }
+
+    @GetMapping("/search-with-multiple-field")
+    public Page<Orders> multiSearch(@RequestParam(required = false) Long companyId, @RequestParam(required = false) OrderStatus orderStatus, @RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate, Pageable pageable){
+        return ordersRepository.findAll(pageable);
+    }
+
+//
 
 //    @PostMapping("/orders")
 //    public ResponseEntity<Orders> createOrders(@RequestBody Orders orders) throws URISyntaxException {

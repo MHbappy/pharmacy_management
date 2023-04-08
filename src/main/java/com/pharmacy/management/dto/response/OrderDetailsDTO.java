@@ -13,10 +13,10 @@ public class OrderDetailsDTO {
 
     //Order Details info
     private Long orderId;
-    private LocalDateTime orderDate;
-    private LocalDate shippedDate;
+    private String orderDate;
+    private String shippedDate;
     private String orderNo;
-    private LocalDate requiredDate;
+    private String requiredDate;
     private Double totalPrice;
     private String deliveryStatus;
 

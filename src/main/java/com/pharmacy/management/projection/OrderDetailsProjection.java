@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 
 public interface OrderDetailsProjection {
     Long getOrderId();
-    LocalDateTime getOrderDate();
-    LocalDate getShippedDate();
+    String getOrderDate();
+    String getShippedDate();
     String getOrderNo();
-    LocalDate getRequiredDate();
+    String getRequiredDate();
     Double getTotalPrice();
     String getDeliveryStatus();
 

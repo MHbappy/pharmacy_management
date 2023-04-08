@@ -21,9 +21,10 @@ import java.util.Optional;
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
     List<Orders> findAllByIsActive(Boolean isActive);
     List<Orders> findAllByUsers(Users users);
-
     Page<Orders> findAllByUsers(Users users, Pageable pageable);
-
+    Page<Orders> findAllByUsersAndOrderNo(Users users, String orderNo, Pageable pageable);
+    Page<Orders> findAll(Pageable pageable);
+    Page<Orders> findAllByOrderNo(String orderNo, Pageable pageable);
     @Query(nativeQuery = true, value = "select o.id              as orderId,\n" +
             "       o.order_date      as orderDate,\n" +
             "       o.shipped_date    as shippedDate,\n" +
@@ -42,8 +43,6 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             "         inner join company c on c.id = u.company_id\n" +
             "where o.id = :orderId")
     Optional<OrderDetailsProjection> getOrderDetailsByOrderId(@Param("orderId") Long orderId);
-
     Page<Orders> findByOrderStatusIn(List<OrderStatus> orderStatuses, Pageable pageable);
-
 
 }
