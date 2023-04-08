@@ -30,8 +30,8 @@ public class Product implements Serializable {
     @Column(name = "product_id")
     private String productId;
 
-    @Column(name = "decription")
-    private String decription;
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "strength")
     private String strength;

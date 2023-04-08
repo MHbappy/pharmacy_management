@@ -14,7 +14,7 @@ public class ProductRequestDTO {
     private String code;
 //    @NotNull
 //    private String productId;
-    private String decription;
+    private String description;
     private String strength;
     private String stsMedicine;
     @NotNull
