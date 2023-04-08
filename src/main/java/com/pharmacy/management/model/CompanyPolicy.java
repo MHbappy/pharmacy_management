@@ -17,7 +17,8 @@ public class CompanyPolicy {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
-
+    @Column(name = "name")
+    private String name;
     @Column(name = "designation")
     @NotNull
     private String designation;
