@@ -246,6 +246,15 @@ http://localhost:8080/api/change-order-status?orderId=3850&orderStatus=DELIVERED
 http://localhost:8080/api/order-status-change-history?orderId=3850
 
 
+Authorization:
+EMPLOYEE: DASHBOARD, PROFILE, ORDER PLACE, ORDER LIST, Delivery Address
+MEDICAL_STAFF: DASHBOARD, PROFILE, APPROVE ORDER, ProductList without any action, User List without any action
+TECHNICAL_STAFF: DASHBOARD, PROFILE, APPROVE ORDER, ProductList without any action, UserList without any action
+
+
+
+
+
 
 
 

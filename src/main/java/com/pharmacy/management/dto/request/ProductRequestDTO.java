@@ -1,14 +1,7 @@
 package com.pharmacy.management.dto.request;
 
-import com.pharmacy.management.model.Suppliers;
-import com.pharmacy.management.model.enumeration.OrderType;
 import lombok.Data;
 import lombok.ToString;
-
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 @Data
