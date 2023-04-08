@@ -1,4 +1,5 @@
 package com.pharmacy.management.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pharmacy.management.model.enumeration.OrderStatus;
 import lombok.Data;
 import javax.persistence.*;
@@ -14,7 +15,7 @@ public class OrderApprove {
 
     @Column(name = "delivery_status")
     @Enumerated(EnumType.STRING)
-    private OrderStatus deliveryStatus;
+    private OrderStatus orderStatus;
 
     @Column(name = "comments")
     String comments;
@@ -22,6 +23,7 @@ public class OrderApprove {
     @ManyToOne
     private Users approvedBy;
 
+    @JsonIgnore
     @ManyToOne
     private Orders orders;
 

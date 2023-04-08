@@ -20,7 +20,4 @@ public interface OrdersItemRepository extends JpaRepository<OrdersItem, Long> {
     List<OrdersItem> findAllByOrders_Id(Long id);
     @Query(nativeQuery = true, value = "select ot.id, ot.price, ot.unit, p.name as productName, p.product_id as productId from orders_item ot inner join product p on p.id = ot.product_id where orders_id = ?1")
     List<OrderItemsProjection> getAllOrderItemByOrderId(Long productId);
-
-
-
 }

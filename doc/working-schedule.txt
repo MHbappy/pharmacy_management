@@ -194,6 +194,57 @@ ar order list e print er ekta button deyear kotha chilo jeta diye full order er 
 ar ei api holo:
 {{ _.base_url }}/api/order-full-info-by-order url
 
+--------------------------2023-05-07----------------------
+
+User:
+1. Add company policy on add user and show in user list.
+2. Update password api problem solved. ami jwt token a userId rakhsi. so jokhon nijer password change korbe tokhon jwt token theke userId nibe ar jokhon admin password change korbe tokhon user list theke userId nibe.
+3. Delete username from User update and edit;
+4. User update er somoy role and password er field ta hidden hoye thakbe.
+5. Admin password change korte parbe. tai, user list e ekta password change button thakbe.
+6. User update hoitesilo nah karon id and company string hoye jacchilo. correct format holo
+
+{
+  "firstName": "Bell",
+  "lastName": "Haney",
+  "birthDate": "1999-09-27",
+  "hireDate": "1989-02-18",
+  "title": "Qui nobis est quam ",
+  "company": {
+		"id": 1000
+	},
+  "email": "jalen@mailinator.com",
+  "username": "sdfdsfdsf",
+  "password": "",
+  "address": "Est vel velit labor",
+  "appUserRoles": [
+    {
+      "name": "USER"
+    }
+  ],
+  "id": 12,
+  "isActive": true
+}
+7. user nijer profile change korte parbe, jwt token e userId deya ase, tai jokhon nijer profile change kobe tokhon id ta nibe jwt token theke ar jokhon admin change korbe tokhon list theke.
+
+
+
+--------------------------2023-05-08----------------------
+
+Order Status : PENDING, APPROVED, DELIVERED, DENIED, CANCELLED
+Employee place a order(PENDING) > medical_staff(PENDING || APPROVED) > technical staff (DELIVERED)
+
+Approve order list:
+http://localhost:8080/api/order-list-for-approve
+**admin pura list pabe.
+
+
+Medical Staff can APPROVED, DENIED
+technical staff DELIVERED
+Employee can CANCELLED
+http://localhost:8080/api/change-order-status?orderId=3850&orderStatus=DELIVERED&comments=sdfdsf
+http://localhost:8080/api/order-status-change-history?orderId=3850
+
 
 
 

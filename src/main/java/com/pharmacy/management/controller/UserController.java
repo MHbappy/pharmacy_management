@@ -9,7 +9,9 @@ import com.pharmacy.management.dto.request.UserUpdateDataDTO;
 import com.pharmacy.management.dto.response.UserDataDTO;
 import com.pharmacy.management.dto.response.UserResponseDTO;
 import com.pharmacy.management.model.Users;
+import com.pharmacy.management.model.enumeration.ROLE;
 import com.pharmacy.management.repository.UserRepository;
+import com.pharmacy.management.security.SecurityUtils;
 import com.pharmacy.management.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
@@ -60,11 +62,21 @@ public class UserController {
 
     @PostMapping("/update-password")
     public Boolean updatePassword(@Valid @RequestBody PasswordChangeDTO passwordChangeDTO) {
-        if (passwordChangeDTO.getId() == null) {
+        if (passwordChangeDTO.getUserId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid id");
         }
-        if (!userRepository.existsById(passwordChangeDTO.getId())) {
+        if (!userRepository.existsById(passwordChangeDTO.getUserId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity not found");
+        }
+
+        Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
+        Users users = userService.getCurrentUser();
+
+        if(isAdmin){
+            return userService.passwordChange(passwordChangeDTO);
+        }
+        if (!users.getId().equals(passwordChangeDTO.getUserId())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not current user or not admin user.");
         }
         return userService.passwordChange(passwordChangeDTO);
     }
@@ -81,6 +93,18 @@ public class UserController {
         if (!userRepository.existsById(userId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity not found");
         }
+
+        Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
+        Users users = userService.getCurrentUser();
+
+        if (isAdmin){
+            return userService.updateUser(user);
+        }
+
+        if (!users.getId().equals(user.getId())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not current user or not admin user.");
+        }
+
         return userService.updateUser(user);
     }
 
@@ -111,7 +135,6 @@ public class UserController {
     }
 
     @GetMapping(value = "/me")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public UserResponseDTO whoami(HttpServletRequest req) {
         return modelMapper.map(userService.whoami(req), UserResponseDTO.class);
     }

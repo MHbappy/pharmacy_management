@@ -27,8 +27,8 @@ public class ProductRequestDTO {
     @NotNull
     private Long categoryId;
     private Long supplierId;
-    @Enumerated(EnumType.STRING)
-    private OrderType orderType;
+//    @Enumerated(EnumType.STRING)
+//    private OrderType orderType;
     @NotNull
     private Integer unitPrice;
     private Integer limitCost;

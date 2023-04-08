@@ -34,7 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http.csrf().disable();
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     http.authorizeRequests()
-            .antMatchers("/api/**").permitAll()
+//            .antMatchers("/api/**").permitAll()
             .antMatchers("/users/signin").permitAll()
             .antMatchers("/users/signup").permitAll()
             .antMatchers("/h2-console/**/**").permitAll()
@@ -45,9 +45,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     "/swagger-resources/**",
                     "/swagger-ui/**",
                     "/webjars/**"
-            ).permitAll();
+            ).permitAll()
+            .anyRequest().authenticated();
 
-//            .anyRequest().authenticated();
     http.exceptionHandling().accessDeniedPage("/login");
     http.apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
     http.httpBasic();

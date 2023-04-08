@@ -64,7 +64,7 @@ public class UserService {
 
 
     public Boolean passwordChange(PasswordChangeDTO appUser) {
-        Users users = userRepository.findById(appUser.getId()).get();
+        Users users = userRepository.findById(appUser.getUserId()).get();
         users.setPassword(passwordEncoder.encode(appUser.getPassword()));
         userRepository.save(users);
         return true;

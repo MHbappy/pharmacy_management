@@ -95,7 +95,7 @@ public final class SecurityUtils {
      * @return true if the current user has the authority, false otherwise.
      */
     public static boolean hasCurrentUserThisAuthority(String authority) {
-        return hasCurrentUserAnyOfAuthorities(authority);
+        return hasCurrentUserAnyOfAuthorities("ROLE_" + authority);
     }
 
     private static Stream<String> getAuthorities(Authentication authentication) {

@@ -42,9 +42,9 @@ public class Product implements Serializable {
     @Column(name = "units_on_order")
     private Integer unitsOnOrder;
 
-    @Column(name = "order_type")
-    @Enumerated(EnumType.STRING)
-    private OrderType orderType;
+//    @Column(name = "order_type")
+//    @Enumerated(EnumType.STRING)
+//    private OrderType orderType;
 
     @Column(name = "reorder_level")
     private Integer reorderLevel;

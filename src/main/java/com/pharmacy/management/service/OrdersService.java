@@ -64,7 +64,6 @@ public class OrdersService {
                             if (orders.getTotalPrice() != null) {
                                 existingOrders.setTotalPrice(orders.getTotalPrice());
                             }
-
                             return existingOrders;
                         }
                 )

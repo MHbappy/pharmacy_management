@@ -13,8 +13,8 @@ import java.util.List;
 public class UserUpdateDataDTO {
     private Long id;
 
-    @Size(min = 4, message = "Minimum User name length: 4 characters")
-    private String username;
+//    @Size(min = 4, message = "Minimum User name length: 4 characters")
+//    private String username;
 
 //    @Size(min = 8, message = "Minimum email length: 5 characters")
 //    @Email

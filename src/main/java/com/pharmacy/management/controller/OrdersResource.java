@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -107,17 +109,22 @@ public class OrdersResource {
         return ResponseEntity.ok(true);
     }
 
-
     @GetMapping("/orders-by-user")
     public Page<Orders> getAllOrders(Pageable pageable) {
+        log.debug("REST request to get all Orders");
+        Users users = userService.getCurrentUser();
+        Page<Orders> ordersList = ordersRepository.findAllByUsers(users, pageable);
+        return ordersList;
+    }
+
+
+    @GetMapping("/order-list-for-approve")
+    public Page<Orders> getAllForApproveOrders(Pageable pageable) {
         log.debug("REST request to get all Orders");
         Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
         Boolean isMedicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.MEDICAL_STUFF.toString());
         Boolean isTechnicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.TECHNICAL_STAFF.toString());
-        Boolean isEmployee = SecurityUtils.hasCurrentUserThisAuthority(ROLE.EMPLOYEE.toString());
-
-        Users users = userService.getCurrentUser();
-        Page<Orders> ordersList = ordersRepository.findAllByUsers(users, pageable);
+        Page<Orders> ordersList = new PageImpl<>(Collections.emptyList());;
 
         if (isAdmin){
             ordersList = ordersRepository.findAll(pageable);
@@ -132,15 +139,13 @@ public class OrdersResource {
             orderStatuses.add(OrderStatus.APPROVED);
             orderStatuses.add(OrderStatus.DELIVERED);
             ordersList = ordersRepository.findByOrderStatusIn(orderStatuses, pageable);
-        }else if (isEmployee){
-            ordersList = ordersRepository.findAllByUsers(users, pageable);
         }
         return ordersList;
     }
 
-    @GetMapping("/order-full-info-by-order")
-    public OrderDetailsDTO getOrderDetailsDTO(@RequestParam Long orderId){
-        return ordersService.getOrdersFullDetailsByOrderId(orderId);
+    @GetMapping("/order-status-change-history")
+    public List<OrderApprove> getAllForApproveOrders(@RequestParam("orderId") Long orderId) {
+        return orderApproveRepository.findAllByOrders_Id(orderId);
     }
 
     //This is for print purpose
@@ -149,14 +154,12 @@ public class OrdersResource {
         ordersService.checkLimitation(productAndQuantityList, categoryId);
     }
 
-
     @PostMapping("/change-order-status")
-    public boolean changeOrderStatus(@RequestParam("productId") Long orderId, @RequestParam("orderStatus") OrderStatus orderStatus, @RequestParam(value = "comments",defaultValue = "") String comments){
+    public boolean changeOrderStatus(@RequestParam("orderId") Long orderId, @RequestParam(value = "orderStatus", required = false) OrderStatus orderStatus, @RequestParam(value = "comments",defaultValue = "") String comments){
         Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
         Boolean isMedicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.MEDICAL_STUFF.toString());
         Boolean isTechnicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.TECHNICAL_STAFF.toString());
         Boolean isEmployee = SecurityUtils.hasCurrentUserThisAuthority(ROLE.EMPLOYEE.toString());
-
 
         Optional<Orders> orders = ordersRepository.findById(orderId);
         Users users = userService.getCurrentUser();
@@ -172,7 +175,7 @@ public class OrdersResource {
         }
 
         if (isMedicalStaff){
-            if (orders.get().getOrderStatus().equals(OrderStatus.PENDING) && (orderStatus.equals(OrderStatus.PENDING) || orderStatus.equals(OrderStatus.DENIED))){
+            if (orders.get().getOrderStatus() != null && orders.get().getOrderStatus().equals(OrderStatus.PENDING) && (orderStatus.equals(OrderStatus.APPROVED) || orderStatus.equals(OrderStatus.DENIED))){
                 orders.get().setOrderStatus(orderStatus);
                 isChanged = true;
             }else {
@@ -183,7 +186,7 @@ public class OrdersResource {
 
         //Technical staff can do only approved to delivered
         if (isTechnicalStaff){
-            if (orders.get().getOrderStatus().equals(OrderStatus.APPROVED) && orderStatus.equals(OrderStatus.DELIVERED)){
+            if (orders.get().getOrderStatus() != null && orders.get().getOrderStatus().equals(OrderStatus.APPROVED) && orderStatus.equals(OrderStatus.DELIVERED)){
                 orders.get().setOrderStatus(orderStatus);
                 isChanged = true;
             }else {
@@ -198,7 +201,7 @@ public class OrdersResource {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
             }
 
-            if (orders.get().getOrderStatus().equals(OrderStatus.CANCELLED) && orderStatus.equals(OrderStatus.PENDING)){
+            if (orders.get().getOrderStatus().equals(OrderStatus.PENDING) && orderStatus.equals(OrderStatus.CANCELLED)){
                 orders.get().setOrderStatus(orderStatus);
                 isChanged = true;
             }else {
@@ -213,9 +216,15 @@ public class OrdersResource {
             orderApprove.setComments(comments);
             orderApprove.setOrders(orders.get());
             orderApprove.setIsActive(true);
+            orderApprove.setOrderStatus(orderStatus);
             orderApproveRepository.save(orderApprove);
         }
         return isChanged;
+    }
+
+    @GetMapping("/order-full-info-by-order")
+    public OrderDetailsDTO getOrderDetailsDTO(@RequestParam Long orderId){
+        return ordersService.getOrdersFullDetailsByOrderId(orderId);
     }
 
 //    @PostMapping("/orders")
