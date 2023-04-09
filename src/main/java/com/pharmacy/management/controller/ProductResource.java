@@ -99,8 +99,8 @@ public class ProductResource {
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         String message = "";
         try {
-//            return ResponseEntity.ok(productService.getProductFromFile(file));
-            return ResponseEntity.ok(true);
+            return ResponseEntity.ok(productService.getProductFromFile(file));
+//            return ResponseEntity.ok(true);
         } catch (Exception e) {
             e.printStackTrace();
             message = "Could not upload the file: " + file.getOriginalFilename() + "!";
