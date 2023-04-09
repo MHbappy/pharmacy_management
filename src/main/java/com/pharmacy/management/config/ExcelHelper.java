@@ -77,8 +77,8 @@ public class ExcelHelper {
                     Cell currentCell = cellsInRow.next();
                     switch (cellIdx) {
                         case 0:
-                            String newValue = ((int) currentCell.getNumericCellValue()) + "";
-                            System.out.println(newValue);
+                            String value = currentCell.getStringCellValue();
+                            System.out.println(value);
                             break;
                         default:
                             break;
