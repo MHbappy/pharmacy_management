@@ -129,7 +129,7 @@ public class UserController {
 //    }
 
     @GetMapping(value = "/all-user")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Page<Users> allUser(@RequestParam(name = "email", defaultValue = "") String email, Pageable pageable) {
         return userService.allUserByEmail(email, pageable);
     }
@@ -146,7 +146,7 @@ public class UserController {
     }
 
     @GetMapping("/refresh")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public String refresh(HttpServletRequest req) {
         return userService.refresh(req.getRemoteUser());
     }

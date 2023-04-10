@@ -73,14 +73,14 @@ public class CategoryResource {
                 .body(result);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/categories")
     public Page<Category> getAllCategories(Pageable pageable) {
         log.debug("REST request to get all Categories");
         return categoryService.findAll(pageable);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all-categories")
     public List<Category> getAllCategories() {
         log.debug("REST request to get all Categories");
