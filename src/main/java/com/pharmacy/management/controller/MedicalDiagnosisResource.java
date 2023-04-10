@@ -26,11 +26,8 @@ import java.util.Optional;
 public class MedicalDiagnosisResource {
 
     private final Logger log = LoggerFactory.getLogger(MedicalDiagnosisResource.class);
-
     private final MedicalDiagnosisService medicalDiagnosisService;
-
     private final MedicalDiagnosisRepository medicalDiagnosisRepository;
-
     public MedicalDiagnosisResource(
         MedicalDiagnosisService medicalDiagnosisService,
         MedicalDiagnosisRepository medicalDiagnosisRepository
