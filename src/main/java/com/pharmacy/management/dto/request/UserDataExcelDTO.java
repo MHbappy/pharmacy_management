@@ -44,7 +44,7 @@ public class UserDataExcelDTO {
 
     private String codeLocation;
 
-    private String company;
+    private String companyName;
 
-    private String companyPolicy;
+    private String companyPolicyName;
 }

@@ -47,13 +47,15 @@ public class UserController {
     @PostMapping("/upload-user-by-exel")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         String message = "";
-        try {
-            return ResponseEntity.ok(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
-        }
+
+        return ResponseEntity.ok(userService.getUserListFromExcel(file));
+//        try {
+//            return ResponseEntity.ok(userService.getUserListFromExcel(file));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+//            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+//        }
     }
 
     @PostMapping("/update-password")

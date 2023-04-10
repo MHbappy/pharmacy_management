@@ -24,7 +24,7 @@ public class Users {
   @Column(unique = true, nullable = false)
   private String email;
 
-  @Size(min = 8, message = "Minimum password length: 8 characters")
+  @Size(min = 6, message = "Minimum password length: 6 characters")
   @JsonIgnore
   private String password;
 

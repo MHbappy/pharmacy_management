@@ -6,12 +6,19 @@ import javax.servlet.http.HttpServletRequest;
 import com.pharmacy.management.config.ExcelHelper;
 import com.pharmacy.management.dto.request.PasswordChangeDTO;
 import com.pharmacy.management.dto.request.ProductRequestExcelDTO;
+import com.pharmacy.management.dto.request.UserDataExcelDTO;
 import com.pharmacy.management.dto.request.UserUpdateDataDTO;
 import com.pharmacy.management.exception.CustomException;
+import com.pharmacy.management.model.Company;
+import com.pharmacy.management.model.CompanyPolicy;
+import com.pharmacy.management.model.Roles;
 import com.pharmacy.management.model.Users;
+import com.pharmacy.management.repository.CompanyPolicyRepository;
+import com.pharmacy.management.repository.CompanyRepository;
 import com.pharmacy.management.repository.UserRepository;
 import com.pharmacy.management.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -29,9 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -42,7 +47,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final CompanyRepository companyRepository;
 
+    private final CompanyPolicyRepository companyPolicyRepository;
     private final ModelMapper modelMapper;
 
     public String signin(String email, String password) {
@@ -130,12 +137,38 @@ public class UserService {
         return null;
     }
 
-    public List<ProductRequestExcelDTO> getProductFromFile(MultipartFile file) {
+    public Boolean getUserListFromExcel(MultipartFile file) {
         try {
             String fileName = file.getOriginalFilename();
             String ext = FilenameUtils.getExtension(fileName);
-            List<ProductRequestExcelDTO> userRoll = ExcelHelper.excelToProduct(file.getInputStream(), ext);
-            return userRoll;
+            List<UserDataExcelDTO> userDataExcelDTOList = ExcelHelper.excelToUser(file.getInputStream(), ext);
+            List<Users> users = new ArrayList<>();
+            for (UserDataExcelDTO userDataExcelDTO: userDataExcelDTOList) {
+
+                Boolean existsByEmail = userRepository.existsByEmail(userDataExcelDTO.getEmail());
+                if (existsByEmail){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already exist user with this email : " + userDataExcelDTO.getEmail());
+                }
+                Optional<CompanyPolicy> companyPolicy = companyPolicyRepository.findByNameAndIsActive(userDataExcelDTO.getCompanyPolicyName(), true);
+                if (!companyPolicy.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company not found with : " + userDataExcelDTO.getCompanyName());
+                }
+                Users user = modelMapper.map(userDataExcelDTO, Users.class);
+                user.setCompanyPolicy(companyPolicy.get());
+                user.setCompany(companyPolicy.get().getCompany());
+
+                Roles roles = new Roles();
+                roles.setName("EMPLOYEE");
+                Set<Roles> rolesSet = new HashSet<>();
+                rolesSet.add(roles);
+
+                user.setRoles(rolesSet);
+                user.setIsActive(true);
+
+                users.add(user);
+            }
+            userRepository.saveAll(users);
+            return true;
         } catch (IOException e) {
             throw new RuntimeException("fail to store excel data: " + e.getMessage());
         }
