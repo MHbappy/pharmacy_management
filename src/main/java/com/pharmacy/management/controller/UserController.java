@@ -6,26 +6,22 @@ import javax.validation.Valid;
 import com.pharmacy.management.dto.request.PasswordChangeDTO;
 import com.pharmacy.management.dto.request.ResponseMessage;
 import com.pharmacy.management.dto.request.UserUpdateDataDTO;
-import com.pharmacy.management.dto.response.UserDataDTO;
-import com.pharmacy.management.dto.response.UserResponseDTO;
+import com.pharmacy.management.dto.request.UserDataDTO;
 import com.pharmacy.management.model.Users;
 import com.pharmacy.management.model.enumeration.ROLE;
 import com.pharmacy.management.repository.UserRepository;
 import com.pharmacy.management.security.SecurityUtils;
 import com.pharmacy.management.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.Objects;
 
 @RestController

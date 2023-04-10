@@ -258,9 +258,14 @@ report:
 order id diye orders search hobe
 
 
---------------------------------------------
-show the product code
-add numId on user front end
+--------------------2023-4-10------------------------
+User add er somoy ei field gula missing ase, ami eigula paisi, tobuo tumi swagger theke ekbar milay deikho...profile update er somoy o eigula thakbe.
+Fields list: add numId, codeCity, codeLocation, extention, homePhone, notes, state, taxNum, title, titleOfCourtesy
+
+product add er somoy "code" name ekta field ase oita add kore dio.
+
+company policy name not showing in list
+
 
 
 

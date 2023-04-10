@@ -14,5 +14,6 @@ public interface CompanyPolicyRepository extends JpaRepository<CompanyPolicy, Lo
     List<CompanyPolicy> findAllByIsActive(Boolean isActive);
     List<CompanyPolicy> findAllByCompany_IdAndIsActive(Long companyId, Boolean isActive);
     Optional<CompanyPolicy> findByDesignationAndCompanyAndIsActive(String designation, Company company, Boolean isActive);
+    Optional<CompanyPolicy> findByNameAndIsActive(String name, Boolean isActive);
 
 }

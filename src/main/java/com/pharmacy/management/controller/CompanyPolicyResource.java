@@ -34,10 +34,16 @@ public class CompanyPolicyResource {
         if (companyPolicy.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new companyPolicy cannot already have an ID");
         }
-        Optional<CompanyPolicy> companyPolicy1 = companyPolicyRepository.findByDesignationAndCompanyAndIsActive(companyPolicy.getDesignation(), companyPolicy.getCompany(), true);
-        if (companyPolicy1.isPresent()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company designation with company name should be unique");
+
+        Optional<CompanyPolicy> companyByCompanyName = companyPolicyRepository.findByNameAndIsActive(companyPolicy.getName(), true);
+        if (companyByCompanyName.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company policy name should be unique");
         }
+
+//        Optional<CompanyPolicy> companyPolicy1 = companyPolicyRepository.findByDesignationAndCompanyAndIsActive(companyPolicy.getDesignation(), companyPolicy.getCompany(), true);
+//        if (companyPolicy1.isPresent()){
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company designation with company name should be unique");
+//        }
 
         CompanyPolicy result = companyPolicyService.save(companyPolicy);
         return ResponseEntity

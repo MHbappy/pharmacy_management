@@ -1,4 +1,4 @@
-package com.pharmacy.management.dto.response;
+package com.pharmacy.management.dto.request;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -3,13 +3,16 @@ package com.pharmacy.management.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.pharmacy.management.config.ExcelHelper;
 import com.pharmacy.management.dto.request.PasswordChangeDTO;
+import com.pharmacy.management.dto.request.ProductRequestExcelDTO;
 import com.pharmacy.management.dto.request.UserUpdateDataDTO;
 import com.pharmacy.management.exception.CustomException;
 import com.pharmacy.management.model.Users;
 import com.pharmacy.management.repository.UserRepository;
 import com.pharmacy.management.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +25,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -125,6 +130,16 @@ public class UserService {
         return null;
     }
 
+    public List<ProductRequestExcelDTO> getProductFromFile(MultipartFile file) {
+        try {
+            String fileName = file.getOriginalFilename();
+            String ext = FilenameUtils.getExtension(fileName);
+            List<ProductRequestExcelDTO> userRoll = ExcelHelper.excelToProduct(file.getInputStream(), ext);
+            return userRoll;
+        } catch (IOException e) {
+            throw new RuntimeException("fail to store excel data: " + e.getMessage());
+        }
+    }
 
 
     public String refresh(String email) {
