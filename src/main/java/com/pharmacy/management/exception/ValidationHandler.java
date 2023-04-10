@@ -15,9 +15,9 @@ import javax.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
-public class ValidationHandler extends ResponseEntityExceptionHandler {
-
+//@ControllerAdvice
+//public class ValidationHandler extends ResponseEntityExceptionHandler {
+//
 //    @Override
 //    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 //                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -31,4 +31,4 @@ public class ValidationHandler extends ResponseEntityExceptionHandler {
 //        });
 //        return new ResponseEntity<Object>(errors, HttpStatus.BAD_REQUEST);
 //    }
-}
+//}

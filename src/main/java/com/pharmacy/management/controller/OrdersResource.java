@@ -242,7 +242,7 @@ public class OrdersResource {
     }
 
     @GetMapping("/search-with-multiple-field")
-    public Page<Orders> multiSearch(@RequestParam(required = false) Long companyId, @RequestParam(required = false) OrderStatus orderStatus, @RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate, Pageable pageable){
+    public Page<Orders> multiSearch(@RequestParam(required = false) Long companyId, @RequestParam(required = false) OrderStatus orderStatus, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, Pageable pageable){
         return ordersRepository.findAll(pageable);
     }
 
