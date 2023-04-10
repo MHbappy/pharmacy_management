@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
@@ -76,6 +77,11 @@ public class MedicalDiagnosisResource {
         return ResponseEntity
             .ok()
             .body(result);
+    }
+
+    @PostMapping("/upload-medical-diagnosis-by-exel")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(medicalDiagnosisService.getMedicalDiagnosisFromExcel(file));
     }
 
     @GetMapping("/medical-diagnoses")

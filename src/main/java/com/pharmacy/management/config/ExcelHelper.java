@@ -3,6 +3,7 @@ package com.pharmacy.management.config;
 import com.pharmacy.management.dto.request.ProductRequestDTO;
 import com.pharmacy.management.dto.request.ProductRequestExcelDTO;
 import com.pharmacy.management.dto.request.UserDataExcelDTO;
+import com.pharmacy.management.model.MedicalDiagnosis;
 import com.pharmacy.management.model.Product;
 import lombok.Data;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -314,6 +315,77 @@ public class ExcelHelper {
 
             workbook.close();
             return userDataExcelDTOS;
+        } catch (IOException e) {
+            throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
+        }
+    }
+
+
+    public static List<MedicalDiagnosis> excelToMedicalDiagnosis(InputStream is, String fileType) {
+        List<MedicalDiagnosis> medicalDiagnoses = new ArrayList<>();
+        try {
+            Workbook workbook = null;
+            try {
+                if (fileType.equalsIgnoreCase("XLSX")) {
+                    workbook = new XSSFWorkbook(is);
+                } else if (fileType.equalsIgnoreCase("XLS")) {
+                    workbook = new HSSFWorkbook(is);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File can't be read");
+            }
+
+            Sheet sheet = workbook.getSheetAt(0);
+            Iterator<Row> rows = sheet.iterator();
+//            List<Product> products = new ArrayList<>();
+            int rowNumber = 0;
+
+            while (rows.hasNext()) {
+                Row currentRow = rows.next();
+                MedicalDiagnosis medicalDiagnosis = new MedicalDiagnosis();
+                // skip header
+                if (rowNumber == 0) {
+                    rowNumber++;
+                    continue;
+                }
+                Iterator<Cell> cellsInRow = currentRow.iterator();
+                int cellIdx = 0;
+                while (cellsInRow.hasNext()) {
+                    Cell currentCell = cellsInRow.next();
+                    switch (cellIdx) {
+                        //name
+                        case 0:
+                            String name = currentCell.getStringCellValue();
+                            if (name.isEmpty()){
+                                continue;
+                            }
+                            name = (name == null ? "" : name );
+                            medicalDiagnosis.setName(name);
+                            System.out.println("name : " + name);
+
+                            break;
+                        case 1:
+                            String description = "";
+                            if(currentCell.getCellType().equals(CellType.NUMERIC)){
+                                description = (int) currentCell.getNumericCellValue() + "";
+                            }else {
+                                description = currentCell.getStringCellValue();
+                            }
+                            description = (description == null ? "" : description);
+                            medicalDiagnosis.setDescription(description);
+                            System.out.println("description : " + description);
+                            break;
+                        default:
+                            break;
+                    }
+                    cellIdx++;
+                }
+                medicalDiagnoses.add(medicalDiagnosis);
+            }
+
+            workbook.close();
+            return medicalDiagnoses;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
         }
