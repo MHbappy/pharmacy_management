@@ -19,4 +19,5 @@ public interface SuppliersRepository extends JpaRepository<Suppliers, Long> {
     Page<Suppliers> findAllByIsActiveAndCompanyNameContaining(Boolean isActive, String companyName, Pageable pageable);
     List<Suppliers> findAllByIsActiveAndCompanyNameContaining(Boolean isActive, String companyName);
     Optional<Suppliers> findByCompanyNameAndIsActive(String companyName, Boolean isActive);
+    Boolean existsByCompanyNameAndIsActive(String companyName, Boolean isActive);
 }

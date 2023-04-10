@@ -2,11 +2,14 @@ package com.pharmacy.management.service;
 
 import com.pharmacy.management.config.ExcelHelper;
 import com.pharmacy.management.dto.request.ProductRequestDTO;
+import com.pharmacy.management.dto.request.ProductRequestExcelDTO;
 import com.pharmacy.management.model.Category;
 import com.pharmacy.management.model.Product;
 import com.pharmacy.management.model.Suppliers;
 import com.pharmacy.management.projection.ProductProjection;
+import com.pharmacy.management.repository.CategoryRepository;
 import com.pharmacy.management.repository.ProductRepository;
+import com.pharmacy.management.repository.SuppliersRepository;
 import lombok.AllArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
@@ -15,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +37,8 @@ import java.util.Optional;
 public class ProductService {
     private final Logger log = LoggerFactory.getLogger(ProductService.class);
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final SuppliersRepository suppliersRepository;
     private final ModelMapper modelMapper;
 
     public Product save(ProductRequestDTO productRequestDTO) {
@@ -56,11 +63,61 @@ public class ProductService {
         return productRepository.save(product1);
     }
 
-    public List<Product> getProductFromFile(MultipartFile file) {
+    public ResponseEntity<?> saveProductWithExcel(List<ProductRequestExcelDTO> productRequestDTO) {
+        log.debug("Request to save Product : {}", productRequestDTO);
+
+        List<Product> productList = new ArrayList<>();
+        for (ProductRequestExcelDTO prodDto : productRequestDTO){
+            Product product = modelMapper.map(prodDto, Product.class);
+            product.setIsActive(true);
+
+            if (prodDto.getCategoryName() == null || prodDto.getCategoryName().isEmpty()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category name can not be empty");
+            }
+            if (prodDto.getSupplierName() == null || prodDto.getSupplierName().isEmpty()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Supplier name can not be empty");
+            }
+
+            Boolean isExistProduct = productRepository.existsByCodeAndIsActive(prodDto.getCode(), true);
+            if (isExistProduct){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The name of product should be unique. Check with" + prodDto.getName());
+            }
+
+            Optional<Category> categoryOptional = categoryRepository.findByNameAndIsActive(prodDto.getCategoryName(), true);
+            if (!categoryOptional.isPresent()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category is not found. Check with " + prodDto.getCategoryName());
+            }
+
+            Optional<Suppliers> suppliersOptional = suppliersRepository.findByCompanyNameAndIsActive(prodDto.getSupplierName(), true);
+            if (!suppliersOptional.isPresent()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Supplier is not found. Check with " + prodDto.getSupplierName());
+            }
+
+            product.setUnitsOnOrder(0);
+            product.setOnStock(0);
+            product.setReorderLevel(0);
+            product.setUnitsOnOrder(0);
+            product.setCategory(categoryOptional.get());
+            product.setSuppliers(suppliersOptional.get());
+            productList.add(product);
+        }
+
+        List<Product> savedProductList = productRepository.saveAll(productList);
+        List<Product> afterGeneratedProductId = new ArrayList<>();
+
+        for(Product prd : savedProductList){
+            prd.setProductId("PROD-23-" + prd.getId());
+            afterGeneratedProductId.add(prd);
+        }
+        productRepository.saveAll(afterGeneratedProductId);
+        return ResponseEntity.ok(true);
+    }
+
+    public List<ProductRequestExcelDTO> getProductFromFile(MultipartFile file) {
         try {
             String fileName = file.getOriginalFilename();
             String ext = FilenameUtils.getExtension(fileName);
-            List<Product> userRoll = ExcelHelper.excelToProduct(file.getInputStream(), ext);
+            List<ProductRequestExcelDTO> userRoll = ExcelHelper.excelToProduct(file.getInputStream(), ext);
             return userRoll;
         } catch (IOException e) {
             throw new RuntimeException("fail to store excel data: " + e.getMessage());

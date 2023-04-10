@@ -1,6 +1,7 @@
 package com.pharmacy.management.controller;
 
 import com.pharmacy.management.dto.request.ProductRequestDTO;
+import com.pharmacy.management.dto.request.ProductRequestExcelDTO;
 import com.pharmacy.management.dto.request.ResponseMessage;
 import com.pharmacy.management.model.Product;
 import com.pharmacy.management.projection.ProductProjection;
@@ -36,9 +37,9 @@ public class ProductResource {
     @PostMapping("/products")
     public ResponseEntity<Product> createProduct(@RequestBody ProductRequestDTO productRequestDTO) throws URISyntaxException {
 
-        Optional<Product> productOptional = productRepository.findByNameAndIsActive(productRequestDTO.getName(), true);
+        Optional<Product> productOptional = productRepository.findByCodeAndIsActive(productRequestDTO.getCode(), true);
         if (productOptional.isPresent()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product name should be unique");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product code should be unique");
         }
         Product result = productService.save(productRequestDTO);
 
@@ -97,19 +98,8 @@ public class ProductResource {
 
     @PostMapping("/upload-product-by-exel")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
-        String message = "";
-        try {
-            return ResponseEntity.ok(productService.getProductFromFile(file));
-//            return ResponseEntity.ok(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
-        }
+        return productService.saveProductWithExcel(productService.getProductFromFile(file));
     }
-
-
-
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {

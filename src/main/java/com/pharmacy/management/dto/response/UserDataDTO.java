@@ -19,8 +19,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class UserDataDTO {
 
-  @Size(min = 4, message = "Minimum User name length: 8 characters")
-  private String username;
+//  @Size(min = 4, message = "Minimum User name length: 8 characters")
+//  private String username;
 
   @Size(min = 8, message = "Minimum email length: 5 characters")
   @Email
@@ -33,6 +33,8 @@ public class UserDataDTO {
   private String firstName;
 
   private String lastName;
+
+  private String numId;
 
   private String title;
 

@@ -258,6 +258,11 @@ report:
 order id diye orders search hobe
 
 
+--------------------------------------------
+show the product code
+add numId on user front end
+
+
 
 
 

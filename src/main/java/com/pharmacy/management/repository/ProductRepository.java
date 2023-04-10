@@ -26,4 +26,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(nativeQuery = true, value = "select sum(total_price) from orders where (order_status = 'APPROVED' OR order_status = 'PENDING') AND to_char(order_date, 'YYYY-MM-DD') like :yearMonth AND users_id = :userId")
     Double currentMonthSalesSum(@Param("yearMonth") String yearMonth, @Param("userId") Long userId);
     Optional<Product> findByNameAndIsActive(String name, Boolean isActive);
+    Optional<Product> findByCodeAndIsActive(String code, Boolean isActive);
+    Boolean existsByNameAndIsActive(String name, Boolean isActive);
+    Boolean existsByCodeAndIsActive(String code, Boolean isActive);
 }
