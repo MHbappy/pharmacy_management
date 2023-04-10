@@ -83,7 +83,6 @@ public class ExcelHelper {
                         default:
                             break;
                     }
-
                     cellIdx++;
                 }
             }
