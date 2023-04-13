@@ -1,6 +1,7 @@
 package com.pharmacy.management.dto.request;
 
 import com.pharmacy.management.model.Company;
+import com.pharmacy.management.model.CompanyPolicy;
 import com.pharmacy.management.model.Roles;
 import lombok.Data;
 
@@ -55,6 +56,8 @@ public class UserUpdateDataDTO {
     private String codeLocation;
 
     private Company company;
+
+    private CompanyPolicy companyPolicy;
 
 //    List<Roles> appUserRoles;
 

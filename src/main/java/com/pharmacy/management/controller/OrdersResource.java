@@ -58,7 +58,7 @@ public class OrdersResource {
         Users users = userService.getCurrentUser();
 
         DeliveryAddress deliveryAddress = deliveryAddressRepository.findByIdAndUsersAndIsActive(orderPlaceRequest.getDeliveryAddressId(), users, true);
-        if (deliveryAddress == null) {
+        if (deliveryAddress == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "In correct delivery address!");
         }
 
@@ -116,8 +116,8 @@ public class OrdersResource {
 
         //for admin user
         Users users = userService.getCurrentUser();
-        if (isAdmin) {
-            if (orderNo != null && !orderNo.isEmpty()) {
+        if (isAdmin){
+            if (orderNo != null && !orderNo.isEmpty()){
                 return ordersRepository.findAllByOrderNo(orderNo, pageable);
             }
             return ordersRepository.findAll(pageable);

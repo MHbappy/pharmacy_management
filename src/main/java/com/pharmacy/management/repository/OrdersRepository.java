@@ -2,6 +2,7 @@ package com.pharmacy.management.repository;
 
 import com.pharmacy.management.model.*;
 import com.pharmacy.management.model.enumeration.OrderStatus;
+import com.pharmacy.management.projection.DashboardInfoProjection;
 import com.pharmacy.management.projection.OrderDetailsProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +44,18 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             "         inner join company c on c.id = u.company_id\n" +
             "where o.id = :orderId")
     Optional<OrderDetailsProjection> getOrderDetailsByOrderId(@Param("orderId") Long orderId);
+
+    @Query(value = "WITH userCount AS (select count(id) as userCount from users)\n" +
+            ", totalOrder AS (select count(id) as totalOrder from orders)\n" +
+            ", totalProduct AS (select count(id) as totalProduct from product where is_active = true)\n" +
+            ", totalCompany AS (select count(id) as totalCompany from company where is_active = true)\n" +
+            ", approvedOrder AS (select count(id) as approvedOrder from orders where order_status = 'APPROVED')\n" +
+            ", orderCancel AS (select count(id) as orderCancel from orders where order_status = 'CANCELLED')\n" +
+            ", orderDeliverd AS (select count(id) as orderDeliverd from orders where order_status = 'DELIVERED')\n" +
+            ", orderPending AS (select count(id) as orderPending from orders where order_status = 'PENDING')\n" +
+            "select *\n" +
+            "from userCount, totalOrder, totalProduct, totalCompany, approvedOrder, orderCancel, orderDeliverd, orderPending", nativeQuery = true)
+    DashboardInfoProjection getDashBoardInfoProjection();
     Page<Orders> findByOrderStatusIn(List<OrderStatus> orderStatuses, Pageable pageable);
 
     @Query(nativeQuery = true, value = "select o.*\n" +
