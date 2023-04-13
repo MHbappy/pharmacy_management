@@ -58,7 +58,7 @@ public class OrdersResource {
         Users users = userService.getCurrentUser();
 
         DeliveryAddress deliveryAddress = deliveryAddressRepository.findByIdAndUsersAndIsActive(orderPlaceRequest.getDeliveryAddressId(), users, true);
-        if (deliveryAddress == null){
+        if (deliveryAddress == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "In correct delivery address!");
         }
 
@@ -116,15 +116,15 @@ public class OrdersResource {
 
         //for admin user
         Users users = userService.getCurrentUser();
-        if (isAdmin){
-            if (orderNo != null && !orderNo.isEmpty()){
+        if (isAdmin) {
+            if (orderNo != null && !orderNo.isEmpty()) {
                 return ordersRepository.findAllByOrderNo(orderNo, pageable);
             }
             return ordersRepository.findAll(pageable);
         }
 
         //for non admin user
-        if (orderNo != null && !orderNo.isEmpty()){
+        if (orderNo != null && !orderNo.isEmpty()) {
             return ordersRepository.findAllByUsersAndOrderNo(users, orderNo, pageable);
         }
         Page<Orders> ordersList = ordersRepository.findAllByUsers(users, pageable);
@@ -138,17 +138,18 @@ public class OrdersResource {
         Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
         Boolean isMedicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.MEDICAL_STUFF.toString());
         Boolean isTechnicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.TECHNICAL_STAFF.toString());
-        Page<Orders> ordersList = new PageImpl<>(Collections.emptyList());;
+        Page<Orders> ordersList = new PageImpl<>(Collections.emptyList());
+        ;
 
-        if (isAdmin){
+        if (isAdmin) {
             ordersList = ordersRepository.findAll(pageable);
-        }else if (isMedicalStaff){
+        } else if (isMedicalStaff) {
             List<OrderStatus> orderStatuses = new ArrayList<>();
             orderStatuses.add(OrderStatus.APPROVED);
             orderStatuses.add(OrderStatus.PENDING);
             orderStatuses.add(OrderStatus.DENIED);
             ordersList = ordersRepository.findByOrderStatusIn(orderStatuses, pageable);
-        }else if (isTechnicalStaff){
+        } else if (isTechnicalStaff) {
             List<OrderStatus> orderStatuses = new ArrayList<>();
             orderStatuses.add(OrderStatus.APPROVED);
             orderStatuses.add(OrderStatus.DELIVERED);
@@ -164,12 +165,12 @@ public class OrdersResource {
 
     //This is for print purpose
     @PostMapping("/current-order-check-limitation")
-    public void getCurrentOrderDetailsDTO(@RequestBody List<OrderPlaceProductDto> productAndQuantityList, @RequestParam("categoryId") Long categoryId){
+    public void getCurrentOrderDetailsDTO(@RequestBody List<OrderPlaceProductDto> productAndQuantityList, @RequestParam("categoryId") Long categoryId) {
         ordersService.checkLimitation(productAndQuantityList, categoryId);
     }
 
     @PostMapping("/change-order-status")
-    public boolean changeOrderStatus(@RequestParam("orderId") Long orderId, @RequestParam(value = "orderStatus", required = false) OrderStatus orderStatus, @RequestParam(value = "comments",defaultValue = "") String comments){
+    public boolean changeOrderStatus(@RequestParam("orderId") Long orderId, @RequestParam(value = "orderStatus", required = false) OrderStatus orderStatus, @RequestParam(value = "comments", defaultValue = "") String comments) {
         Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
         Boolean isMedicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.MEDICAL_STUFF.toString());
         Boolean isTechnicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.TECHNICAL_STAFF.toString());
@@ -179,51 +180,51 @@ public class OrdersResource {
         Users users = userService.getCurrentUser();
         Boolean isChanged = false;
 
-        if (!orders.isPresent()){
+        if (!orders.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product is not found");
         }
 
-        if (isAdmin){
+        if (isAdmin) {
             orders.get().setOrderStatus(orderStatus);
             isChanged = true;
         }
 
-        if (isMedicalStaff){
-            if (orders.get().getOrderStatus() != null && orders.get().getOrderStatus().equals(OrderStatus.PENDING) && (orderStatus.equals(OrderStatus.APPROVED) || orderStatus.equals(OrderStatus.DENIED))){
+        if (isMedicalStaff) {
+            if (orders.get().getOrderStatus() != null && orders.get().getOrderStatus().equals(OrderStatus.PENDING) && (orderStatus.equals(OrderStatus.APPROVED) || orderStatus.equals(OrderStatus.DENIED))) {
                 orders.get().setOrderStatus(orderStatus);
                 isChanged = true;
-            }else {
+            } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
             }
         }
 
 
         //Technical staff can do only approved to delivered
-        if (isTechnicalStaff){
-            if (orders.get().getOrderStatus() != null && orders.get().getOrderStatus().equals(OrderStatus.APPROVED) && orderStatus.equals(OrderStatus.DELIVERED)){
+        if (isTechnicalStaff) {
+            if (orders.get().getOrderStatus() != null && orders.get().getOrderStatus().equals(OrderStatus.APPROVED) && orderStatus.equals(OrderStatus.DELIVERED)) {
                 orders.get().setOrderStatus(orderStatus);
                 isChanged = true;
-            }else {
+            } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
             }
         }
 
         //Technical staff can do only approved to delivered
-        if (isEmployee){
+        if (isEmployee) {
             //if not own user then thow a bad request
-            if (!users.getId().equals(orders.get().getUsers().getId())){
+            if (!users.getId().equals(orders.get().getUsers().getId())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
             }
 
-            if (orders.get().getOrderStatus().equals(OrderStatus.PENDING) && orderStatus.equals(OrderStatus.CANCELLED)){
+            if (orders.get().getOrderStatus().equals(OrderStatus.PENDING) && orderStatus.equals(OrderStatus.CANCELLED)) {
                 orders.get().setOrderStatus(orderStatus);
                 isChanged = true;
-            }else {
+            } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
             }
         }
 
-        if (isChanged){
+        if (isChanged) {
             OrderApprove orderApprove = new OrderApprove();
             orderApprove.setOrders(orders.get());
             orderApprove.setApprovedBy(users);
@@ -237,12 +238,24 @@ public class OrdersResource {
     }
 
     @GetMapping("/order-full-info-by-order")
-    public OrderDetailsDTO getOrderDetailsDTO(@RequestParam Long orderId){
+    public OrderDetailsDTO getOrderDetailsDTO(@RequestParam Long orderId) {
         return ordersService.getOrdersFullDetailsByOrderId(orderId);
     }
 
     @GetMapping("/search-with-multiple-field")
-    public Page<Orders> multiSearch(@RequestParam(required = false) Long companyId, @RequestParam(required = false) OrderStatus orderStatus, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, Pageable pageable){
+    public Page<Orders> multiSearch(@RequestParam(required = false) Long companyId, @RequestParam(required = false) OrderStatus orderStatus, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, Pageable pageable) {
+        if (companyId == null && orderStatus == null && startDate == null && endDate == null) {
+            return ordersRepository.findAll(pageable);
+        } else if (companyId != null && orderStatus == null && startDate == null && endDate == null) {
+            return ordersRepository.findAllOrdersByCompanyId(companyId, pageable);
+        } else if (companyId != null && orderStatus != null && startDate == null && endDate == null) {
+            return ordersRepository.findAllCompanyIdAndStatus(companyId, orderStatus.toString(), pageable);
+        } else if (companyId != null && orderStatus != null && startDate != null) {
+            if (endDate == null) {
+                endDate = LocalDate.now().toString();
+            }
+            return ordersRepository.findAllCompanyIdAndStatusAndDate(companyId, orderStatus.toString(), startDate, endDate, pageable);
+        }
         return ordersRepository.findAll(pageable);
     }
 

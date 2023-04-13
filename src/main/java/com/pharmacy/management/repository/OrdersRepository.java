@@ -45,4 +45,24 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
     Optional<OrderDetailsProjection> getOrderDetailsByOrderId(@Param("orderId") Long orderId);
     Page<Orders> findByOrderStatusIn(List<OrderStatus> orderStatuses, Pageable pageable);
 
+    @Query(nativeQuery = true, value = "select o.*\n" +
+            "from orders o\n" +
+            "         inner join users u on o.users_id = u.id\n" +
+            "where u.company_id = :companyId")
+    Page<Orders> findAllOrdersByCompanyId(@Param("companyId") Long companyId, Pageable pageable);
+
+    @Query(nativeQuery = true, value = "select o.*\n" +
+            "from orders o\n" +
+            "         inner join users u on o.users_id = u.id\n" +
+            "where u.company_id = :companyId\n" +
+            "  AND o.order_status = :orderStatus")
+    Page<Orders> findAllCompanyIdAndStatus(@Param("companyId") Long companyId, @Param("orderStatus") String orderStatus, Pageable pageable);
+
+    @Query(nativeQuery = true, value = "select o.*\n" +
+            "from orders o\n" +
+            "         inner join users u on o.users_id = u.id\n" +
+            "where u.company_id = :companyId\n" +
+            "  AND o.order_status = :orderStatus AND order_date between :startDate AND :endDate")
+    Page<Orders> findAllCompanyIdAndStatusAndDate(@Param("companyId") Long companyId, @Param("orderStatus") String orderStatus, @Param("startDate") String startDate, @Param("startDate") String endDate,  Pageable pageable);
+
 }
