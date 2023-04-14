@@ -1,15 +1,18 @@
 package com.pharmacy.management.controller;
 
+import com.pharmacy.management.config.StripeClient;
 import com.pharmacy.management.dto.request.OrderPlaceProductDto;
 import com.pharmacy.management.dto.request.OrderPlaceRequest;
 import com.pharmacy.management.dto.response.OrderDetailsDTO;
 import com.pharmacy.management.model.*;
 import com.pharmacy.management.model.enumeration.OrderStatus;
+import com.pharmacy.management.model.enumeration.PaymentStatus;
 import com.pharmacy.management.model.enumeration.ROLE;
 import com.pharmacy.management.repository.*;
 import com.pharmacy.management.security.SecurityUtils;
 import com.pharmacy.management.service.OrdersService;
 import com.pharmacy.management.service.UserService;
+import com.stripe.exception.StripeException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,71 +45,11 @@ public class OrdersResource {
     private final UserService userService;
     private final DeliveryAddressRepository deliveryAddressRepository;
     private final OrderApproveRepository orderApproveRepository;
+    private final StripeClient stripeClient;
 
     @PostMapping("/place-orders")
-    public ResponseEntity<?> createOrders(@RequestBody OrderPlaceRequest orderPlaceRequest) {
-
-        if (orderPlaceRequest.getProductAndQuantityList() == null || orderPlaceRequest.getProductAndQuantityList().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please add some product!");
-        }
-        if (orderPlaceRequest.getDeliveryAddressId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please add address!");
-        }
-        if (orderPlaceRequest.getCategoryId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found");
-        }
-        Users users = userService.getCurrentUser();
-
-        DeliveryAddress deliveryAddress = deliveryAddressRepository.findByIdAndUsersAndIsActive(orderPlaceRequest.getDeliveryAddressId(), users, true);
-        if (deliveryAddress == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "In correct delivery address!");
-        }
-
-        Double totalPrice = 0d;
-        List<OrdersItem> ordersItemList = new ArrayList<>();
-        for (OrderPlaceProductDto orderPlaceRequest1 : orderPlaceRequest.getProductAndQuantityList()) {
-            OrdersItem ordersItem = new OrdersItem();
-            Optional<Product> productOptional = productRepository.findById(orderPlaceRequest1.getProductId());
-            if (!productOptional.isEmpty()) {
-                Double unitPrice = productOptional.get().getUnitPrice() == null ? 0 : productOptional.get().getUnitPrice();
-                Double singleProductTotalPrice = unitPrice * orderPlaceRequest1.getQuantity();
-                totalPrice += singleProductTotalPrice;
-                ordersItem.setProduct(productOptional.get());
-                ordersItem.setUnit(orderPlaceRequest1.getQuantity());
-                ordersItem.setPrice(singleProductTotalPrice);
-                ordersItem.setIsActive(true);
-                ordersItemList.add(ordersItem);
-            }
-        }
-
-        Orders orders1 = null;
-        if (ordersItemList != null || !ordersItemList.isEmpty()) {
-            Orders orders = new Orders();
-            orders.setOrderDate(LocalDateTime.now());
-            orders.setRequiredDate(LocalDate.now().plusDays(3));
-            orders.setOrderStatus(OrderStatus.PENDING);
-            orders.setShippedDate(null);
-            orders.setIsActive(true);
-            orders.setUsers(users);
-            orders.setDeliveryAddress(deliveryAddress);
-            orders.setTotalPrice(totalPrice);
-            orders1 = ordersRepository.save(orders);
-            orders1.setOrderNo("ORD-23" + orders.getId());
-            orders1 = ordersRepository.save(orders1);
-        }
-
-        List<OrdersItem> ordersItemListWitOrder = new ArrayList<>();
-        if (orders1 != null) {
-            for (OrdersItem ordersItem : ordersItemList) {
-                ordersItem.setOrders(orders1);
-                ordersItemListWitOrder.add(ordersItem);
-            }
-        }
-
-        if (ordersItemListWitOrder != null || !ordersItemListWitOrder.isEmpty()) {
-            ordersItemRepository.saveAll(ordersItemListWitOrder);
-        }
-        return ResponseEntity.ok(true);
+    public ResponseEntity<?> createOrders(@RequestBody OrderPlaceRequest orderPlaceRequest) throws StripeException {
+        return ResponseEntity.ok(ordersService.createOrders(orderPlaceRequest));
     }
 
     @GetMapping("/orders-by-user")
@@ -224,6 +167,16 @@ public class OrdersResource {
             }
         }
 
+        if (isChanged && (orderStatus.equals(OrderStatus.DELIVERED) || orderStatus.equals(OrderStatus.CANCELLED) || orderStatus.equals(OrderStatus.DENIED))){
+            List<OrdersItem> ordersItemList = ordersItemRepository.findAllByOrders_Id(orderId);
+            for (OrdersItem ordersItem : ordersItemList){
+               if ( ordersItem.getProduct() != null){
+                   Product product = ordersItem.getProduct();
+                   product.setUnitsOnOrder(product.getUnitsOnOrder() - ordersItem.getUnit());
+               }
+            }
+        }
+
         if (isChanged) {
             OrderApprove orderApprove = new OrderApprove();
             orderApprove.setOrders(orders.get());
@@ -244,14 +197,21 @@ public class OrdersResource {
 
     @GetMapping("/search-with-multiple-field")
     public Page<Orders> multiSearch(@RequestParam(required = false) Long companyId, @RequestParam(required = false) OrderStatus orderStatus, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, Pageable pageable) {
-        if (companyId == null && orderStatus == null && startDate == null && endDate == null) {
+        log.info("companyId : " + companyId);
+        log.info("orderStatus : " + orderStatus);
+        log.info("startDate : " + startDate);
+        log.info("endDate : " + endDate);
+
+        orderStatus = OrderStatus.PENDING;
+
+        if (companyId == null && orderStatus == null && (startDate == null || !startDate.isEmpty()) && (endDate == null || endDate.isEmpty())) {
             return ordersRepository.findAll(pageable);
-        } else if (companyId != null && orderStatus == null && startDate == null && endDate == null) {
+        } else if (companyId != null && orderStatus == null && startDate.isEmpty() && endDate.isEmpty()) {
             return ordersRepository.findAllOrdersByCompanyId(companyId, pageable);
-        } else if (companyId != null && orderStatus != null && startDate == null && endDate == null) {
+        } else if (companyId != null && orderStatus != null && startDate.isEmpty() && endDate.isEmpty()) {
             return ordersRepository.findAllCompanyIdAndStatus(companyId, orderStatus.toString(), pageable);
         } else if (companyId != null && orderStatus != null && startDate != null) {
-            if (endDate == null) {
+            if (endDate == null || endDate.isEmpty()) {
                 endDate = LocalDate.now().toString();
             }
             return ordersRepository.findAllCompanyIdAndStatusAndDate(companyId, orderStatus.toString(), startDate, endDate, pageable);

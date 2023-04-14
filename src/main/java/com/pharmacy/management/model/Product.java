@@ -40,26 +40,26 @@ public class Product implements Serializable {
     private String stsMedicine;
 
     @Column(name = "units_on_order")
-    private Integer unitsOnOrder;
+    private Integer unitsOnOrder  = 0;
 
 //    @Column(name = "order_type")
 //    @Enumerated(EnumType.STRING)
 //    private OrderType orderType;
 
     @Column(name = "reorder_level")
-    private Integer reorderLevel;
+    private Integer reorderLevel  = 0;
 
     @Column(name = "onStock")
-    private Integer onStock;
+    private Integer onStock = 0;
 
     @Column(name = "unit_price")
-    private Double unitPrice;
+    private Double unitPrice = 0d;
 
     @Column(name = "limit_cost")
-    private Integer limitCost;
+    private Integer limitCost  = 0;
 
     @Column(name = "limit_unit")
-    private Integer limitUnit;
+    private Integer limitUnit  = 0;
 
     @Column(name = "file")
     @Lob

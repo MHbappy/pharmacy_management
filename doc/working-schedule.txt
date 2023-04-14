@@ -268,6 +268,15 @@ company policy name not showing in list
 
 
 
+--------------------2023-4-14------------------------
+order report api hitting multiple, order report has no additional action
+stock not show in product
+instead of search by name to search
+Chance medical diagnosis import API, api/upload-medical-diagnosis-by-exel
+
+added order payment status, only show on list
+
+
 
 
 

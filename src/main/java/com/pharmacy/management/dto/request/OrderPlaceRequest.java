@@ -5,6 +5,7 @@ import java.util.List;
 
 @Data
 public class OrderPlaceRequest {
+    String paymentToken;
     List<OrderPlaceProductDto> productAndQuantityList;
     Long categoryId;
     Long diagnosis;

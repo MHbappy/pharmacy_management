@@ -1,24 +1,33 @@
 package com.pharmacy.management.service;
 
+import com.pharmacy.management.config.StripeClient;
 import com.pharmacy.management.dto.request.OrderPlaceProductDto;
+import com.pharmacy.management.dto.request.OrderPlaceRequest;
 import com.pharmacy.management.dto.response.OrderDetailsDTO;
 import com.pharmacy.management.model.*;
+import com.pharmacy.management.model.enumeration.OrderStatus;
+import com.pharmacy.management.model.enumeration.PaymentStatus;
 import com.pharmacy.management.projection.OrderDetailsProjection;
 import com.pharmacy.management.projection.OrderItemsProjection;
 import com.pharmacy.management.repository.*;
+import com.stripe.exception.StripeException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,6 +47,7 @@ public class OrdersService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final UserService userService;
+    private final StripeClient stripeClient;
 
     public Orders save(Orders orders) {
         log.debug("Request to save Orders : {}", orders);
@@ -82,6 +92,100 @@ public class OrdersService {
     public Optional<Orders> findOne(Long id) {
         log.debug("Request to get Orders : {}", id);
         return ordersRepository.findById(id);
+    }
+
+
+    public Boolean createOrders(@RequestBody OrderPlaceRequest orderPlaceRequest) throws StripeException {
+        if (orderPlaceRequest.getProductAndQuantityList() == null || orderPlaceRequest.getProductAndQuantityList().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please add some product!");
+        }
+        if (orderPlaceRequest.getDeliveryAddressId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please add address!");
+        }
+        if (orderPlaceRequest.getCategoryId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found");
+        }
+
+        if (orderPlaceRequest.getPaymentToken() == null || orderPlaceRequest.getPaymentToken().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment token can not be empty");
+        }
+
+//        if (orderPlaceRequest.getAmount() == null || orderPlaceRequest.getAmount() < 1) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment can be less than 1 USD");
+//        }
+        Users users = userService.getCurrentUser();
+
+        DeliveryAddress deliveryAddress = deliveryAddressRepository.findByIdAndUsersAndIsActive(orderPlaceRequest.getDeliveryAddressId(), users, true);
+        if (deliveryAddress == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "In correct delivery address!");
+        }
+
+        Double totalPrice = 0d;
+        List<OrdersItem> ordersItemList = new ArrayList<>();
+        for (OrderPlaceProductDto orderPlaceRequest1 : orderPlaceRequest.getProductAndQuantityList()) {
+            OrdersItem ordersItem = new OrdersItem();
+            Optional<Product> productOptional = productRepository.findById(orderPlaceRequest1.getProductId());
+
+            //set onOrder and stock
+
+
+            if (!productOptional.isEmpty()) {
+                Double unitPrice = productOptional.get().getUnitPrice() == null ? 0 : productOptional.get().getUnitPrice();
+                Double singleProductTotalPrice = unitPrice * orderPlaceRequest1.getQuantity();
+                totalPrice += singleProductTotalPrice;
+                ordersItem.setProduct(productOptional.get());
+                ordersItem.setUnit(orderPlaceRequest1.getQuantity());
+                ordersItem.setPrice(singleProductTotalPrice);
+                ordersItem.setIsActive(true);
+                ordersItemList.add(ordersItem);
+
+                //Stock adjustment
+                if (productOptional.get().getOnStock() < orderPlaceRequest1.getQuantity()){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product " + productOptional.get().getName() + " out of stock");
+                }
+                productOptional.get().setOnStock(productOptional.get().getOnStock() - orderPlaceRequest1.getQuantity());
+                productOptional.get().setUnitsOnOrder(productOptional.get().getUnitsOnOrder() + orderPlaceRequest1.getQuantity());
+            }
+        }
+
+        Orders orders1 = null;
+        if (ordersItemList != null || !ordersItemList.isEmpty()) {
+            Orders orders = new Orders();
+            orders.setOrderDate(LocalDateTime.now());
+            orders.setRequiredDate(LocalDate.now().plusDays(3));
+            orders.setOrderStatus(OrderStatus.PENDING);
+            orders.setShippedDate(null);
+            orders.setIsActive(true);
+            orders.setUsers(users);
+            orders.setDeliveryAddress(deliveryAddress);
+            orders.setTotalPrice(totalPrice);
+            orders1 = ordersRepository.save(orders);
+            orders1.setOrderNo("ORD-23" + orders.getId());
+            orders1.setPaymentStatus(PaymentStatus.PENDING);
+            orders1 = ordersRepository.save(orders1);
+        }
+
+        List<OrdersItem> ordersItemListWitOrder = new ArrayList<>();
+        if (orders1 != null) {
+            for (OrdersItem ordersItem : ordersItemList) {
+                ordersItem.setOrders(orders1);
+                ordersItemListWitOrder.add(ordersItem);
+            }
+        }
+
+
+        if (ordersItemListWitOrder != null || !ordersItemListWitOrder.isEmpty()) {
+            ordersItemRepository.saveAll(ordersItemListWitOrder);
+            StripePaymentHistory paymentHistory = stripeClient.chargeNewCard(orderPlaceRequest.getPaymentToken(), totalPrice, orders1.getId());
+            if (paymentHistory.getStatus().equals("succeeded")){
+                orders1.setPaymentStatus(PaymentStatus.PAID);
+            }else {
+                orders1.setPaymentStatus(PaymentStatus.FAILED);
+            }
+            ordersRepository.save(orders1);
+        }
+
+        return true;
     }
 
 

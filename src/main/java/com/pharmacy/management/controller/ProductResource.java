@@ -96,7 +96,7 @@ public class ProductResource {
         return product;
     }
 
-    @PostMapping("/upload-product-by-exel")
+    @PostMapping("/products/upload-product-by-exel")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         return productService.saveProductWithExcel(productService.getProductFromFile(file));
     }

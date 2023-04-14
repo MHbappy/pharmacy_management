@@ -1,6 +1,7 @@
 package com.pharmacy.management.model;
 
 import com.pharmacy.management.model.enumeration.OrderStatus;
+import com.pharmacy.management.model.enumeration.PaymentStatus;
 import lombok.Data;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -39,6 +40,10 @@ public class Orders implements Serializable {
     @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+
+    @Column(name = "payment_status")
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
     @ManyToOne
     private DeliveryAddress deliveryAddress;
