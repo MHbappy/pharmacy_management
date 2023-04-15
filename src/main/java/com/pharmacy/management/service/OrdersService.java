@@ -229,6 +229,10 @@ public class OrdersService {
         Double currentMonthSale = (currentMonthSaleAmount == null ? 0 :  currentMonthSaleAmount) + currentOrderTotalPrice;
         log.info("Total cost : " + currentMonthSale);
 
+        if (companyPolicy == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company policy not found");
+        }
+
         if (currentMonthSale > companyPolicy.getLimitCost()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company policy cost limit cross");
         }

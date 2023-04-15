@@ -274,13 +274,16 @@ stock not show in product list
 instead of search by name to search
 Chance medical diagnosis import API, api/upload-medical-diagnosis-by-exel
 Order table, added order payment status, only show on list
-User table, added isSelfPayment field, add edit show this field.
 User table not changing company policy by select company
+User table, added isSelfPayment field, add edit show this field.
 isSelfPayment jwt token e store kora ase, ei isSelfPayment diye ensure hobe je payment direct hobe or stripe e hobe.
 Change product list api from order place {{ base_url }}/api/on-stock-product-name-productId-search
 product search not working
 Stock add time add field comments.
-
+Readonly stock edit : stock Status, Qunatity, select Product
+Hidden select company and select policy from update profile.
+Technical Staff can delivered only if it is approved.
+Employee can cancel order it is only pending stage
 
 
 USER
