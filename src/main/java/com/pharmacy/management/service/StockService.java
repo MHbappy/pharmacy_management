@@ -28,7 +28,7 @@ public class StockService {
     private final StockRepository stockRepository;
     private final ProductRepository productRepository;
 
-    
+
     public Stock save(Stock stock) {
         log.debug("Request to save Stock : {}", stock);
         stock.setIsActive(true);
@@ -44,20 +44,23 @@ public class StockService {
         }
         Product product = productOptional.get();
 
-        if (stock.getInOutStatus().equals(InOutStatus.IN)){
-            Integer currentProductStock = (product.getOnStock() == null ? 0 : product.getOnStock()) + stock.getQuantity();
-            product.setOnStock(currentProductStock);
-            productRepository.save(product);
+        if (stock.getId() == null){
+            if (stock.getInOutStatus().equals(InOutStatus.IN)){
+                Integer currentProductStock = (product.getOnStock() == null ? 0 : product.getOnStock()) + stock.getQuantity();
+                product.setOnStock(currentProductStock);
+                productRepository.save(product);
+            }
+
+            if (stock.getInOutStatus().equals(InOutStatus.OUT)){
+                Integer currentProductStock = (product.getOnStock() == null ? 0 : product.getOnStock()) - stock.getQuantity();
+                if (currentProductStock < 0){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full stock can not be negative");
+                }
+                product.setOnStock(currentProductStock);
+                productRepository.save(product);
+            }
         }
 
-        if (stock.getInOutStatus().equals(InOutStatus.OUT)){
-            Integer currentProductStock = (product.getOnStock() == null ? 0 : product.getOnStock()) - stock.getQuantity();
-            if (currentProductStock < 0){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full stock can not be negative");
-            }
-            product.setOnStock(currentProductStock);
-            productRepository.save(product);
-        }
         return stockRepository.save(stock);
     }
 

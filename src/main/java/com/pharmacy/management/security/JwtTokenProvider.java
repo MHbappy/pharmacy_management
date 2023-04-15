@@ -49,6 +49,7 @@ public class JwtTokenProvider {
     Claims claims = Jwts.claims().setSubject(username);
     claims.put("auth", roles);
     claims.put("userId", appUser.getId());
+    claims.put("isSelfPayment", appUser.getIsSelfPayment());
 
     Date now = new Date();
     Date validity = new Date(now.getTime() + validityInMilliseconds);

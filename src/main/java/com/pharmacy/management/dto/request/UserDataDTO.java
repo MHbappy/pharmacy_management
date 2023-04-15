@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -63,9 +64,9 @@ public class UserDataDTO {
   private String codeLocation;
 
   private Company company;
-
   private CompanyPolicy companyPolicy;
-
+//  @NotNull
+  private Boolean isSelfPayment = false;
   List<Roles> appUserRoles;
 
 }

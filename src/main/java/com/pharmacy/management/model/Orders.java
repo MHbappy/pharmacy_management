@@ -48,6 +48,8 @@ public class Orders implements Serializable {
     @ManyToOne
     private DeliveryAddress deliveryAddress;
 
+    private Boolean isSelfPayment;
+
     @ManyToOne
 //    @JsonIgnore
     private Users users;

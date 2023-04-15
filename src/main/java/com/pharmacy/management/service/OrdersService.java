@@ -106,14 +106,10 @@ public class OrdersService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found");
         }
 
-        if (orderPlaceRequest.getPaymentToken() == null || orderPlaceRequest.getPaymentToken().isEmpty()) {
+        Users users = userService.getCurrentUser();
+        if (users.getIsSelfPayment() != null && users.getIsSelfPayment() && (orderPlaceRequest.getPaymentToken() == null || orderPlaceRequest.getPaymentToken().isEmpty())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment token can not be empty");
         }
-
-//        if (orderPlaceRequest.getAmount() == null || orderPlaceRequest.getAmount() < 1) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment can be less than 1 USD");
-//        }
-        Users users = userService.getCurrentUser();
 
         DeliveryAddress deliveryAddress = deliveryAddressRepository.findByIdAndUsersAndIsActive(orderPlaceRequest.getDeliveryAddressId(), users, true);
         if (deliveryAddress == null){
@@ -125,10 +121,7 @@ public class OrdersService {
         for (OrderPlaceProductDto orderPlaceRequest1 : orderPlaceRequest.getProductAndQuantityList()) {
             OrdersItem ordersItem = new OrdersItem();
             Optional<Product> productOptional = productRepository.findById(orderPlaceRequest1.getProductId());
-
             //set onOrder and stock
-
-
             if (!productOptional.isEmpty()) {
                 Double unitPrice = productOptional.get().getUnitPrice() == null ? 0 : productOptional.get().getUnitPrice();
                 Double singleProductTotalPrice = unitPrice * orderPlaceRequest1.getQuantity();
@@ -159,6 +152,7 @@ public class OrdersService {
             orders.setUsers(users);
             orders.setDeliveryAddress(deliveryAddress);
             orders.setTotalPrice(totalPrice);
+            orders.setIsSelfPayment(users.getIsSelfPayment());
             orders1 = ordersRepository.save(orders);
             orders1.setOrderNo("ORD-23" + orders.getId());
             orders1.setPaymentStatus(PaymentStatus.PENDING);
@@ -173,16 +167,18 @@ public class OrdersService {
             }
         }
 
-
         if (ordersItemListWitOrder != null || !ordersItemListWitOrder.isEmpty()) {
             ordersItemRepository.saveAll(ordersItemListWitOrder);
-            StripePaymentHistory paymentHistory = stripeClient.chargeNewCard(orderPlaceRequest.getPaymentToken(), totalPrice, orders1.getId());
-            if (paymentHistory.getStatus().equals("succeeded")){
-                orders1.setPaymentStatus(PaymentStatus.PAID);
-            }else {
-                orders1.setPaymentStatus(PaymentStatus.FAILED);
+            //Stripe Payment
+            if(users.getIsSelfPayment() != null && users.getIsSelfPayment()){
+                StripePaymentHistory paymentHistory = stripeClient.chargeNewCard(orderPlaceRequest.getPaymentToken(), totalPrice, orders1.getId());
+                if (paymentHistory.getStatus().equals("succeeded")){
+                    orders1.setPaymentStatus(PaymentStatus.PAID);
+                }else {
+                    orders1.setPaymentStatus(PaymentStatus.FAILED);
+                }
+                ordersRepository.save(orders1);
             }
-            ordersRepository.save(orders1);
         }
 
         return true;

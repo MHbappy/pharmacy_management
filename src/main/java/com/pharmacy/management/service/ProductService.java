@@ -155,15 +155,24 @@ public class ProductService {
 
 
     @Transactional(readOnly = true)
-    public Page<Product> findAllByName(@RequestParam(name = "name", defaultValue = "") String name, Pageable pageable) {
+    public Page<Product> findAllByName(String name, Pageable pageable) {
         log.debug("Request to get all Products");
-        return productRepository.findAllByIsActiveAndNameContaining(true, name, pageable);
+        return productRepository.findAllByIsActiveAndNameContainingIgnoreCase(true, name, pageable);
     }
 
-
+    @Transactional(readOnly = true)
+    public List<Product> getAllOnStockProduct(String name) {
+        log.debug("Request to get all Products");
+        if (name.isEmpty()){
+            name = "%_%";
+        }else {
+            name = "%" + name + "%";
+        }
+        return productRepository.findAllOnStockProductAndNameContain(name);
+    }
 
     @Transactional(readOnly = true)
-    public List<Product> findAllByName(@RequestParam(name = "name", defaultValue = "") String name) {
+    public List<Product> findAllByName(String name) {
         log.debug("Request to get all Products");
         return productRepository.findAllByIsActiveAndNameContaining(true, name);
     }
@@ -174,8 +183,11 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
-    public List<ProductProjection> searchProductNameAndProductId(String productNameOrProductId){
-        return productRepository.searchProductNameAndProductId("%" + productNameOrProductId + "%");
+    public List<ProductProjection> searchProductNameAndProductId(String productNameOrProductId, Long categoryId){
+        if (productNameOrProductId.isEmpty()){
+            productNameOrProductId = "%_%";
+        }
+        return productRepository.searchProductNameAndProductId("%" + productNameOrProductId + "%", categoryId);
     }
 
     public void delete(Long id) {

@@ -74,6 +74,12 @@ public class ProductResource {
         return productService.findAllByName(name, pageable);
     }
 
+//    @GetMapping("/on-stock-products")
+//    public List<Product> getAllOnStockProducts(@RequestParam(name = "name", defaultValue = "") String name) {
+//        log.debug("REST request to get all Products");
+//        return productService.getAllOnStockProduct(name);
+//    }
+
     @GetMapping("/all-products")
     public List<Product> getAllProducts(@RequestParam(name = "name", defaultValue = "") String name) {
         log.debug("REST request to get all Products");
@@ -87,9 +93,10 @@ public class ProductResource {
         return ResponseEntity.ok(product.get());
     }
 
-    @GetMapping("/product-name-productId-search")
-    public List<ProductProjection> searchProductNameAndProductId(@RequestParam("productNameOrProductId") String productNameOrProductId){
-        List<ProductProjection> product = productService.searchProductNameAndProductId(productNameOrProductId);
+    @GetMapping("/on-stock-product-name-productId-search")
+    public List<ProductProjection> searchProductNameAndProductId(@RequestParam(value = "categoryId") Long categoryId,
+                                                                 @RequestParam(value = "productNameOrProductId", required = false, defaultValue = "") String productNameOrProductId){
+        List<ProductProjection> product = productService.searchProductNameAndProductId(productNameOrProductId, categoryId);
         if (product == null){
             return new ArrayList<>();
         }

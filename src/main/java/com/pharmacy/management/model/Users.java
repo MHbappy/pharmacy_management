@@ -79,6 +79,9 @@ public class Users {
   @Column(name = "notes")
   private String notes;
 
+  @Column(name = "is_self_payment")
+  private Boolean isSelfPayment = false;
+
   @Column(name = "is_active")
   private Boolean isActive;
 

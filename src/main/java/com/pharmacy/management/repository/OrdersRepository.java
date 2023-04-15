@@ -35,7 +35,7 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             "       u.email as userEmail,\n" +
             "       u.first_name as userFirstName,\n" +
             "       u.last_name as userLastName, \n" +
-            "       o.delivery_status as deliveryStatus,\n" +
+            "       o.order_status as deliveryStatus,\n" +
             "       c.name            as companyName,\n" +
             "       c.tax_id          as companyTaxId,\n" +
             "       c.email           as companyEmail\n" +
