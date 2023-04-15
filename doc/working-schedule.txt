@@ -265,25 +265,23 @@ Fields list: add numId, codeCity, codeLocation, extention, homePhone, notes, sta
 product add er somoy "code" name ekta field ase oita add kore dio.
 
 company policy name not showing in list
-
-
-
 --------------------2023-4-14------------------------
-order report api hitting multiple, order report has no additional action
-stock not show in product list
-instead of search by name to search
-Chance medical diagnosis import API, api/upload-medical-diagnosis-by-exel
-Order table, added order payment status, only show on list
-User table not changing company policy by select company
-User table, added isSelfPayment field, add edit show this field.
-isSelfPayment jwt token e store kora ase, ei isSelfPayment diye ensure hobe je payment direct hobe or stripe e hobe.
-Change product list api from order place {{ base_url }}/api/on-stock-product-name-productId-search
-product search not working
-Stock add time add field comments.
-Readonly stock edit : stock Status, Qunatity, select Product
-Hidden select company and select policy from update profile.
-Technical Staff can delivered only if it is approved.
-Employee can cancel order it is only pending stage
+User table not changing company policy by select company(1)
+User table, added isSelfPayment field, add edit show this field.(1)
+isSelfPayment jwt token e store kora ase, ei isSelfPayment diye ensure hobe je payment direct hobe or stripe e hobe(1)
+Change product list api from order place {{ base_url }}/api/on-stock-product-name-productId-search(1)
+
+order report api hitting multiple, order report has no additional action(2)
+stock not show in product list(2)
+instead of search by name to search(2)
+Chance medical diagnosis import API, api/upload-medical-diagnosis-by-exel(2)
+Order table, added order payment status, only show on list(2)
+product search not working(2)
+Stock add, add field comments.(2)
+Readonly stock edit : stock Status, Qunatity, select Product(2)
+Hidden select company and select policy from update profile.(2)
+Technical Staff can delivered only if it is approved.(2)
+Employee can cancel order it is only pending stage(2)
 
 
 USER
