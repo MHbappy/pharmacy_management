@@ -30,7 +30,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "       limit_unit    as limitUnit\n" +
             "from product\n" +
             "where concat(lower(name), lower(product_id)) like lower(:productNameOrProductId)\n" +
-            "  AND is_active = true AND on_stock > 0 AND categoryId = :categoryId\n" +
+            "  AND is_active = true AND on_stock > 0 AND category_id = :categoryId\n" +
             "limit 50")
     List<ProductProjection> searchProductNameAndProductId(@Param("productNameOrProductId") String productNameOrProductId, @Param("categoryId") Long categoryId);
     @Query(nativeQuery = true, value = "select sum(total_price) from orders where (order_status = 'APPROVED' OR order_status = 'PENDING') AND to_char(order_date, 'YYYY-MM-DD') like :yearMonth AND users_id = :userId")
