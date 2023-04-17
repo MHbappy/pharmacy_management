@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,6 +77,6 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             "         inner join users u on o.users_id = u.id\n" +
             "where u.company_id = :companyId\n" +
             "  AND o.order_status = :orderStatus AND order_date between :startDate AND :endDate")
-    Page<Orders> findAllCompanyIdAndStatusAndDate(@Param("companyId") Long companyId, @Param("orderStatus") String orderStatus, @Param("startDate") String startDate, @Param("startDate") String endDate,  Pageable pageable);
+    Page<Orders> findAllCompanyIdAndStatusAndDate(@Param("companyId") Long companyId, @Param("orderStatus") String orderStatus, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
 
 }

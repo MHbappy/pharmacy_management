@@ -27,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -114,80 +115,7 @@ public class OrdersResource {
 
     @PostMapping("/change-order-status")
     public boolean changeOrderStatus(@RequestParam("orderId") Long orderId, @RequestParam(value = "orderStatus", required = false) OrderStatus orderStatus, @RequestParam(value = "comments", defaultValue = "") String comments) {
-        Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
-        Boolean isMedicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.MEDICAL_STUFF.toString());
-        Boolean isTechnicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.TECHNICAL_STAFF.toString());
-        Boolean isEmployee = SecurityUtils.hasCurrentUserThisAuthority(ROLE.EMPLOYEE.toString());
-
-        Optional<Orders> orders = ordersRepository.findById(orderId);
-        Users users = userService.getCurrentUser();
-        Boolean isChanged = false;
-
-        if (!orders.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product is not found");
-        }
-
-        if (isAdmin) {
-            orders.get().setOrderStatus(orderStatus);
-            isChanged = true;
-        }
-
-        if (isMedicalStaff) {
-            if (orders.get().getOrderStatus() != null && orders.get().getOrderStatus().equals(OrderStatus.PENDING) && (orderStatus.equals(OrderStatus.APPROVED) || orderStatus.equals(OrderStatus.DENIED))) {
-                orders.get().setOrderStatus(orderStatus);
-                isChanged = true;
-            } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
-            }
-        }
-
-
-        //Technical staff can do only approved to delivered
-        if (isTechnicalStaff) {
-            if (orders.get().getOrderStatus() != null && orders.get().getOrderStatus().equals(OrderStatus.APPROVED) && orderStatus.equals(OrderStatus.DELIVERED)) {
-                orders.get().setOrderStatus(orderStatus);
-                isChanged = true;
-            } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
-            }
-        }
-
-        //Technical staff can do only approved to delivered
-        if (isEmployee) {
-            //if not own user then thow a bad request
-            if (!users.getId().equals(orders.get().getUsers().getId())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
-            }
-
-            if (orders.get().getOrderStatus().equals(OrderStatus.PENDING) && orderStatus.equals(OrderStatus.CANCELLED)) {
-                orders.get().setOrderStatus(orderStatus);
-                isChanged = true;
-            } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
-            }
-        }
-
-        if (isChanged && (orderStatus.equals(OrderStatus.DELIVERED) || orderStatus.equals(OrderStatus.CANCELLED) || orderStatus.equals(OrderStatus.DENIED))){
-            List<OrdersItem> ordersItemList = ordersItemRepository.findAllByOrders_Id(orderId);
-            for (OrdersItem ordersItem : ordersItemList){
-               if ( ordersItem.getProduct() != null){
-                   Product product = ordersItem.getProduct();
-                   product.setUnitsOnOrder(product.getUnitsOnOrder() - ordersItem.getUnit());
-               }
-            }
-        }
-
-        if (isChanged) {
-            OrderApprove orderApprove = new OrderApprove();
-            orderApprove.setOrders(orders.get());
-            orderApprove.setApprovedBy(users);
-            orderApprove.setComments(comments);
-            orderApprove.setOrders(orders.get());
-            orderApprove.setIsActive(true);
-            orderApprove.setOrderStatus(orderStatus);
-            orderApproveRepository.save(orderApprove);
-        }
-        return isChanged;
+        return ordersService.changeOrderStatus(orderId, orderStatus, comments);
     }
 
     @GetMapping("/order-full-info-by-order")
@@ -197,12 +125,7 @@ public class OrdersResource {
 
     @GetMapping("/search-with-multiple-field")
     public Page<Orders> multiSearch(@RequestParam(required = false) Long companyId, @RequestParam(required = false) OrderStatus orderStatus, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate, Pageable pageable) {
-        log.info("companyId : " + companyId);
-        log.info("orderStatus : " + orderStatus);
-        log.info("startDate : " + startDate);
-        log.info("endDate : " + endDate);
-
-        orderStatus = OrderStatus.PENDING;
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         if (companyId == null && orderStatus == null && (startDate == null || !startDate.isEmpty()) && (endDate == null || endDate.isEmpty())) {
             return ordersRepository.findAll(pageable);
@@ -211,10 +134,16 @@ public class OrdersResource {
         } else if (companyId != null && orderStatus != null && startDate.isEmpty() && endDate.isEmpty()) {
             return ordersRepository.findAllCompanyIdAndStatus(companyId, orderStatus.toString(), pageable);
         } else if (companyId != null && orderStatus != null && startDate != null) {
-            if (endDate == null || endDate.isEmpty()) {
-                endDate = LocalDate.now().toString();
+            LocalDate startDateParam = LocalDate.parse(startDate, myFormatObj);
+            LocalDate endDateParam = LocalDate.now();
+            try {
+                endDateParam = LocalDate.parse(endDate, myFormatObj);
+            }catch (Exception e){
             }
-            return ordersRepository.findAllCompanyIdAndStatusAndDate(companyId, orderStatus.toString(), startDate, endDate, pageable);
+            if (endDate == null || endDate.isEmpty()) {
+                endDateParam = LocalDate.now();
+            }
+            return ordersRepository.findAllCompanyIdAndStatusAndDate(companyId, orderStatus.toString(), startDateParam, endDateParam, pageable);
         }
         return ordersRepository.findAll(pageable);
     }

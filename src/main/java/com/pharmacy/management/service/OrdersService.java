@@ -7,9 +7,11 @@ import com.pharmacy.management.dto.response.OrderDetailsDTO;
 import com.pharmacy.management.model.*;
 import com.pharmacy.management.model.enumeration.OrderStatus;
 import com.pharmacy.management.model.enumeration.PaymentStatus;
+import com.pharmacy.management.model.enumeration.ROLE;
 import com.pharmacy.management.projection.OrderDetailsProjection;
 import com.pharmacy.management.projection.OrderItemsProjection;
 import com.pharmacy.management.repository.*;
+import com.pharmacy.management.security.SecurityUtils;
 import com.stripe.exception.StripeException;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -48,6 +50,7 @@ public class OrdersService {
     private final ProductRepository productRepository;
     private final UserService userService;
     private final StripeClient stripeClient;
+    private final OrderApproveRepository orderApproveRepository;
 
     public Orders save(Orders orders) {
         log.debug("Request to save Orders : {}", orders);
@@ -236,6 +239,88 @@ public class OrdersService {
         if (currentMonthSale > companyPolicy.getLimitCost()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company policy cost limit cross");
         }
+    }
+
+
+    @Transactional
+    public boolean changeOrderStatus(Long orderId, OrderStatus orderStatus, String comments) {
+
+
+        Boolean isAdmin = SecurityUtils.hasCurrentUserThisAuthority(ROLE.ADMIN.toString());
+        Boolean isMedicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.MEDICAL_STUFF.toString());
+        Boolean isTechnicalStaff = SecurityUtils.hasCurrentUserThisAuthority(ROLE.TECHNICAL_STAFF.toString());
+        Boolean isEmployee = SecurityUtils.hasCurrentUserThisAuthority(ROLE.EMPLOYEE.toString());
+
+        Optional<Orders> orders = ordersRepository.findById(orderId);
+        Users users = userService.getCurrentUser();
+        Boolean isChanged = false;
+
+        if (!orders.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product is not found");
+        }
+
+        if (isAdmin) {
+            orders.get().setOrderStatus(orderStatus);
+            isChanged = true;
+        }
+
+        if (isMedicalStaff) {
+            if (orders.get().getOrderStatus() != null && orders.get().getOrderStatus().equals(OrderStatus.PENDING) && (orderStatus.equals(OrderStatus.APPROVED) || orderStatus.equals(OrderStatus.DENIED))) {
+                orders.get().setOrderStatus(orderStatus);
+                isChanged = true;
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
+            }
+        }
+
+
+        //Technical staff can do only approved to delivered
+        if (isTechnicalStaff) {
+            if (orders.get().getOrderStatus() != null && orders.get().getOrderStatus().equals(OrderStatus.APPROVED) && orderStatus.equals(OrderStatus.DELIVERED)) {
+                orders.get().setOrderStatus(orderStatus);
+                isChanged = true;
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
+            }
+        }
+
+        //Technical staff can do only approved to delivered
+        if (isEmployee) {
+            //if not own user then thow a bad request
+            if (!users.getId().equals(orders.get().getUsers().getId())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
+            }
+
+            if (orders.get().getOrderStatus().equals(OrderStatus.PENDING) && orderStatus.equals(OrderStatus.CANCELLED)) {
+                orders.get().setOrderStatus(orderStatus);
+                isChanged = true;
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You have no access");
+            }
+        }
+
+        if (isChanged && (orderStatus.equals(OrderStatus.DELIVERED) || orderStatus.equals(OrderStatus.CANCELLED) || orderStatus.equals(OrderStatus.DENIED))){
+            List<OrdersItem> ordersItemList = ordersItemRepository.findAllByOrders_Id(orderId);
+            for (OrdersItem ordersItem : ordersItemList){
+                if ( ordersItem.getProduct() != null){
+                    Product product = ordersItem.getProduct();
+                    product.setUnitsOnOrder(product.getUnitsOnOrder() - ordersItem.getUnit());
+                }
+            }
+        }
+
+        if (isChanged) {
+            OrderApprove orderApprove = new OrderApprove();
+            orderApprove.setOrders(orders.get());
+            orderApprove.setApprovedBy(users);
+            orderApprove.setComments(comments);
+            orderApprove.setOrders(orders.get());
+            orderApprove.setIsActive(true);
+            orderApprove.setOrderStatus(orderStatus);
+            orderApproveRepository.save(orderApprove);
+        }
+        return isChanged;
+
     }
 
     public OrderDetailsDTO getOrdersFullDetailsByOrderId(Long orderId) {
