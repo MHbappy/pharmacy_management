@@ -8,6 +8,7 @@ public class OrderPlaceRequest {
     String paymentToken;
     List<OrderPlaceProductDto> productAndQuantityList;
     Long categoryId;
+    Long providerId;
     Long diagnosis;
     Long deliveryAddressId;
 }

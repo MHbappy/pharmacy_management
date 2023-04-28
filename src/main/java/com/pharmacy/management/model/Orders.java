@@ -48,6 +48,9 @@ public class Orders implements Serializable {
     @ManyToOne
     private DeliveryAddress deliveryAddress;
 
+    @ManyToOne
+    private Provider provider;
+
     private Boolean isSelfPayment;
 
     @ManyToOne
