@@ -282,7 +282,9 @@ Readonly stock edit : stock Status, Qunatity, select Product(2)
 Hidden select company and select policy from update profile.(2)
 Technical Staff can delivered only if it is approved.(2)
 Employee can cancel order it is only pending stage(2)
+---------------------------------------------------------
 
+edit time not showing company policy
 
 USER
 ADMIN

@@ -12,11 +12,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 @SpringBootApplication
 //@OpenAPIDefinition
 public class PharmacyManagementApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(PharmacyManagementApplication.class, args);
 	}
-
 	@Bean
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
