@@ -109,6 +109,10 @@ public class OrdersService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found");
         }
 
+        if (orderPlaceRequest.getProviderId() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provider not found");
+        }
+
         Users users = userService.getCurrentUser();
         if (users.getIsSelfPayment() != null && users.getIsSelfPayment() && (orderPlaceRequest.getPaymentToken() == null || orderPlaceRequest.getPaymentToken().isEmpty())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Payment token can not be empty");
@@ -116,8 +120,10 @@ public class OrdersService {
 
         DeliveryAddress deliveryAddress = deliveryAddressRepository.findByIdAndUsersAndIsActive(orderPlaceRequest.getDeliveryAddressId(), users, true);
         if (deliveryAddress == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "In correct delivery address!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect delivery address!");
         }
+
+
 
         Double totalPrice = 0d;
         List<OrdersItem> ordersItemList = new ArrayList<>();

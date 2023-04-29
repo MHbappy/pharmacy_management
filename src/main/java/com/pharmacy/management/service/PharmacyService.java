@@ -14,11 +14,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class PharmacyService {
-
     private final Logger log = LoggerFactory.getLogger(PharmacyService.class);
-
     private final PharmacyRepository pharmacyRepository;
-
     public PharmacyService(PharmacyRepository pharmacyRepository) {
         this.pharmacyRepository = pharmacyRepository;
     }
@@ -29,7 +26,6 @@ public class PharmacyService {
         return pharmacyRepository.save(pharmacy);
     }
 
-    
     public Optional<Pharmacy> partialUpdate(Pharmacy pharmacy) {
         log.debug("Request to partially update Pharmacy : {}", pharmacy);
 
@@ -49,7 +45,6 @@ public class PharmacyService {
             )
             .map(pharmacyRepository::save);
     }
-
     
     @Transactional(readOnly = true)
     public List<Pharmacy> findAll() {
@@ -57,14 +52,12 @@ public class PharmacyService {
         return pharmacyRepository.findAll();
     }
 
-    
     @Transactional(readOnly = true)
     public Optional<Pharmacy> findOne(Long id) {
         log.debug("Request to get Pharmacy : {}", id);
         return pharmacyRepository.findById(id);
     }
 
-    
     public void delete(Long id) {
         log.debug("Request to delete Pharmacy : {}", id);
         pharmacyRepository.deleteById(id);
