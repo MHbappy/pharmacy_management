@@ -123,6 +123,12 @@ public class UserService {
         return appUser;
     }
 
+
+    public Page<Users> getUsersByCompanyId(Long companyId, Pageable pageable) {
+        Page<Users> appUser = userRepository.findAllByCompany_Id(companyId, pageable);
+        return appUser;
+    }
+
     public Users whoami(HttpServletRequest req) {
         return userRepository.findByEmail(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
     }

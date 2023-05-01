@@ -148,6 +148,14 @@ public class OrdersResource {
         return ordersRepository.findAll(pageable);
     }
 
+
+    @GetMapping("/search-with-employee-order-numId")
+    public Page<Orders> multiSearch(@RequestParam String numId, Pageable pageable) {
+        return ordersRepository.findAllByUserNumId(numId, pageable);
+    }
+
+
+
 //
 
 //    @PostMapping("/orders")

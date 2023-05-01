@@ -79,4 +79,11 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             "  AND o.order_status = :orderStatus AND order_date between :startDate AND :endDate")
     Page<Orders> findAllCompanyIdAndStatusAndDate(@Param("companyId") Long companyId, @Param("orderStatus") String orderStatus, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, Pageable pageable);
 
+
+    @Query(nativeQuery = true, value = "select o.*\n" +
+            "            from orders o\n" +
+            "                     inner join users u on o.users_id = u.id\n" +
+            "            where u.num_id = :userNumId")
+    Page<Orders> findAllByUserNumId(@Param("userNumId") String userNumId, Pageable pageable);
+
 }

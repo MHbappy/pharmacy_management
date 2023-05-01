@@ -111,6 +111,15 @@ public class UserController {
     }
 
 
+    @GetMapping(value = "/search-by-companyId")
+    public Page<Users> searchByCompanyId(@RequestParam("companyId") Long companyId, Pageable pageable) {
+        return userService.getUsersByCompanyId(companyId, pageable);
+    }
+
+
+
+
+
 //    @GetMapping(value = "/all-user")
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
 //    public Page<Users> allUser(@RequestParam(name = "email", defaultValue = "") String email, Pageable pageable) {
